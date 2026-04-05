@@ -1,0 +1,468 @@
+═══════════════════════════════════════════════════════════════════════════
+✅ CHECKLIST: CONFIGURACIÓN COMPLETA PAYPAL + AUTENTICACIÓN LOCAL
+═══════════════════════════════════════════════════════════════════════════
+
+IMPORTANTE (2025-11):
+- Esta checklist conserva pasos de Auth0 a modo histórico.
+- El login actual es local (CGI + JWT RS256). Usa `AUTENTICACION_LOCAL_RS256.md` para nuevos despliegues.
+
+📋 DATOS QUE NECESITAS CONFIGURAR
+═══════════════════════════════════════════════════════════════════════════
+
+🔐 PAYPAL - CREDENCIALES API
+───────────────────────────────────────────────────────────────────────────
+
+✅ Client ID: AeQmMsX61wEOaPyjxdv7ikGwPsBjhMgxMybkAclcpRUHttrmlALyNtgIIj1AQYI23NLyAOE6I34nuMAw
+✅ Client Secret: EJES9LgjH7rX63eoT8XLW0kZhT1fqE0kKxdnjIXViSzOsWcMXAAus37Ya0ZhmlmkTboVVqtUY62Q-EAj
+✅ Mode: sandbox (ya configurado)
+
+📝 CUENTAS SANDBOX PAYPAL:
+   • Business Account: sb-g3fdv47313875@business.example.com / uN]3$uN^
+   • Personal Account: sb-9ro3j47656815@personal.example.com / Jt517L9<
+
+
+📁 ARCHIVO .env REQUERIDO
+═══════════════════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANTE: Debes crear un archivo .env en la raíz del proyecto con todas
+   estas variables. El archivo .env NO debe subirse a Git.
+
+Ubicación: C:\Users\Fernando Acuña\OneDrive\Escritorio\Esfero\.env
+
+───────────────────────────────────────────────────────────────────────────
+# ============================================
+# CONFIGURACIÓN DE BASE DE DATOS
+# ============================================
+DB_HOST=localhost
+DB_NAME=esfero
+DB_USER=root
+DB_PASSWORD=
+DB_PORT=3306
+DB_CHARSET=utf8mb4
+
+# ============================================
+# CONFIGURACIÓN DE PAYPAL
+# ============================================
+PAYPAL_MODE=sandbox
+PAYPAL_CLIENT_ID=AeQmMsX61wEOaPyjxdv7ikGwPsBjhMgxMybkAclcpRUHttrmlALyNtgIIj1AQYI23NLyAOE6I34nuMAw
+PAYPAL_CLIENT_SECRET=EJES9LgjH7rX63eoT8XLW0kZhT1fqE0kKxdnjIXViSzOsWcMXAAus37Ya0ZhmlmkTboVVqtUY62Q-EAj
+PAYPAL_RETURN_URL=http://localhost/esfero/frontend/checkout.php?success=true
+PAYPAL_CANCEL_URL=http://localhost/esfero/frontend/checkout.php?canceled=true
+
+# ============================================
+APP_DEBUG=true
+APP_URL=http://localhost/esfero
+───────────────────────────────────────────────────────────────────────────
+
+
+🔍 VERIFICACIÓN DE ARCHIVOS
+═══════════════════════════════════════════════════════════════════════════
+
+✅ PHP - Configuración:
+   □ config/paypal_config.php - ✅ Configurado correctamente
+   □ config/auth0_config.php - ✅ Configurado correctamente
+   □ config/load_env.php - ✅ Carga variables de .env
+
+✅ Python - Backend:
+   □ backend/cgi-bin/paypal.py - ✅ Lee PAYPAL_* desde os.getenv() + carga .env
+   □ backend/cgi-bin/auth0_jwt_tools.py - ✅ Lee AUTH0_* desde os.getenv() + carga .env
+   □ backend/cgi-bin/load_env.py - ✅ NUEVO: Carga automática de .env para Python
+
+✅ SOLUCIÓN IMPLEMENTADA: Python ahora carga automáticamente el archivo .env
+   usando backend/cgi-bin/load_env.py. No necesitas configurar variables del sistema.
+
+
+📝 VARIABLES DE ENTORNO PARA PYTHON
+═══════════════════════════════════════════════════════════════════════════
+
+El backend Python usa os.getenv() que lee variables del sistema operativo.
+Tienes dos opciones:
+
+OPCIÓN 1: Configurar variables de entorno en Windows
+───────────────────────────────────────────────────────────────────────────
+1. Abre PowerShell como Administrador
+2. Ejecuta estos comandos (ajusta los valores):
+
+$env:PAYPAL_MODE="sandbox"
+$env:PAYPAL_CLIENT_ID="AeQmMsX61wEOaPyjxdv7ikGwPsBjhMgxMybkAclcpRUHttrmlALyNtgIIj1AQYI23NLyAOE6I34nuMAw"
+$env:PAYPAL_CLIENT_SECRET="EJES9LgjH7rX63eoT8XLW0kZhT1fqE0kKxdnjIXViSzOsWcMXAAus37Ya0ZhmlmkTboVVqtUY62Q-EAj"
+
+3. Para hacerlo permanente, agrégalas al perfil de PowerShell o variables
+   del sistema de Windows.
+
+OPCIÓN 2: Usar load_env.py (YA IMPLEMENTADO ✅)
+───────────────────────────────────────────────────────────────────────────
+✅ Ya está implementado: backend/cgi-bin/load_env.py carga automáticamente
+   el archivo .env. Los archivos paypal.py y jwt_tools.py ya lo usan.
+
+   Solo necesitas crear el archivo .env en la raíz del proyecto con todas
+   las variables listadas arriba.
+
+
+✅ CHECKLIST FINAL
+═══════════════════════════════════════════════════════════════════════════
+
+PAYPAL:
+□ Archivo .env creado con PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET
+✅ Python carga .env automáticamente (load_env.py implementado)
+□ Credenciales de PayPal verificadas en PayPal Developer Dashboard
+✅ Cuentas Sandbox listas (Business y Personal)
+
+BASE DE DATOS:
+□ Variables DB_* configuradas en .env
+□ Base de datos 'esfero' creada
+
+PRUEBAS:
+□ Login local (JWT RS256) funciona
+□ Creación de orden funciona
+□ Pago con PayPal funciona
+□ Retorno desde PayPal funciona
+
+
+🚨 PROBLEMAS COMUNES Y SOLUCIONES
+═══════════════════════════════════════════════════════════════════════════
+
+Problema: "PAYPAL_CLIENT_ID not found" en Python
+Solución: Configura las variables de entorno o instala python-dotenv
+
+Problema: "Invalid PayPal credentials"
+Solución: Verifica que las credenciales en .env sean correctas
+
+
+═══════════════════════════════════════════════════════════════════════════
+🚀 CONFIGURACIÓN DEL SERVIDOR REMOTO APACHE
+═══════════════════════════════════════════════════════════════════════════
+
+📦 SOFTWARE A INSTALAR EN EL SERVIDOR
+───────────────────────────────────────────────────────────────────────────
+
+1. APACHE HTTP SERVER
+   ────────────────────────────────────────────────────────────────────────
+   • Versión mínima: 2.4
+   • Instalación:
+     - Ubuntu/Debian: sudo apt-get update && sudo apt-get install apache2
+     - CentOS/RHEL: sudo yum install httpd
+     - Windows Server: Descargar desde https://httpd.apache.org/
+
+2. PHP
+   ────────────────────────────────────────────────────────────────────────
+   • Versión mínima: PHP 7.4 o superior (recomendado PHP 8.0+)
+   • Instalación:
+     - Ubuntu/Debian: sudo apt-get install php php-mysql php-curl php-json php-mbstring
+     - CentOS/RHEL: sudo yum install php php-mysql php-curl php-json php-mbstring
+   
+   • Extensiones PHP requeridas:
+     □ php-pdo
+     □ php-pdo_mysql
+     □ php-curl
+     □ php-json
+     □ php-mbstring
+     □ php-openssl
+     □ php-fileinfo
+
+3. PYTHON
+   ────────────────────────────────────────────────────────────────────────
+   • Versión mínima: Python 3.7 o superior (recomendado Python 3.9+)
+   • Instalación:
+     - Ubuntu/Debian: sudo apt-get install python3 python3-pip
+     - CentOS/RHEL: sudo yum install python3 python3-pip
+   
+   • Librerías Python requeridas:
+     □ requests (pip install requests)
+     □ python-jose[cryptography] (pip install python-jose[cryptography])
+     □ cryptography (pip install cryptography)
+   
+   • Instalación de librerías:
+     sudo pip3 install requests python-jose[cryptography] cryptography
+
+4. MYSQL/MARIADB
+   ────────────────────────────────────────────────────────────────────────
+   • Versión mínima: MySQL 5.7+ o MariaDB 10.3+
+   • Instalación:
+     - Ubuntu/Debian: sudo apt-get install mysql-server
+     - CentOS/RHEL: sudo yum install mariadb-server
+   
+   • Configuración inicial:
+     sudo mysql_secure_installation
+
+5. SSL/TLS (CERTIFICADO HTTPS)
+   ────────────────────────────────────────────────────────────────────────
+   • OBLIGATORIO para PayPal y Auth0 en producción
+   • Opciones:
+     - Let's Encrypt (gratis): sudo apt-get install certbot python3-certbot-apache
+     - Certificado comercial
+     - Certificado autofirmado (solo para pruebas)
+
+
+🔧 CONFIGURACIÓN DE APACHE
+───────────────────────────────────────────────────────────────────────────
+
+1. HABILITAR MÓDULOS NECESARIOS
+   ────────────────────────────────────────────────────────────────────────
+   sudo a2enmod rewrite
+   sudo a2enmod ssl
+   sudo a2enmod headers
+   sudo a2enmod cgi
+   sudo a2enmod proxy
+   sudo a2enmod proxy_http
+   sudo systemctl restart apache2
+
+2. CONFIGURAR PYTHON CGI
+   ────────────────────────────────────────────────────────────────────────
+   Edita /etc/apache2/sites-available/000-default.conf (o tu VirtualHost):
+   
+   <Directory /var/www/html/esfero/backend/cgi-bin>
+       Options +ExecCGI
+       AddHandler cgi-script .py
+       Require all granted
+   </Directory>
+   
+   ScriptAlias /backend/cgi-bin/ /var/www/html/esfero/backend/cgi-bin/
+   
+   Reinicia Apache: sudo systemctl restart apache2
+
+3. PERMISOS DE ARCHIVOS
+   ────────────────────────────────────────────────────────────────────────
+   # Dar permisos de ejecución a scripts Python
+   chmod +x /var/www/html/esfero/backend/cgi-bin/*.py
+   
+   # Permisos del directorio
+   chmod 755 /var/www/html/esfero/backend/cgi-bin
+   
+   # Permisos del archivo .env (solo lectura para Apache)
+   chmod 600 /var/www/html/esfero/.env
+   chown www-data:www-data /var/www/html/esfero/.env
+
+4. CONFIGURAR VIRTUALHOST
+   ────────────────────────────────────────────────────────────────────────
+   Crea /etc/apache2/sites-available/esfero.conf:
+   
+   <VirtualHost *:80>
+       ServerName tudominio.com
+       ServerAlias www.tudominio.com
+       DocumentRoot /var/www/html/esfero/frontend
+       
+       <Directory /var/www/html/esfero/frontend>
+           Options Indexes FollowSymLinks
+           AllowOverride All
+           Require all granted
+       </Directory>
+       
+       # Python CGI
+       ScriptAlias /backend/cgi-bin/ /var/www/html/esfero/backend/cgi-bin/
+       <Directory /var/www/html/esfero/backend/cgi-bin>
+           Options +ExecCGI
+           AddHandler cgi-script .py
+           Require all granted
+       </Directory>
+       
+       # Logs
+       ErrorLog ${APACHE_LOG_DIR}/esfero_error.log
+       CustomLog ${APACHE_LOG_DIR}/esfero_access.log combined
+   </VirtualHost>
+   
+   Habilita el sitio:
+   sudo a2ensite esfero.conf
+   sudo systemctl reload apache2
+
+
+🔒 CONFIGURACIÓN DE SEGURIDAD
+───────────────────────────────────────────────────────────────────────────
+
+1. FIREWALL - PUERTOS A HABILITAR
+   ────────────────────────────────────────────────────────────────────────
+   • Puerto 80 (HTTP) - OBLIGATORIO
+   • Puerto 443 (HTTPS) - OBLIGATORIO para producción
+   • Puerto 3306 (MySQL) - Solo si acceso remoto necesario
+   
+   Comandos UFW (Ubuntu):
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   sudo ufw enable
+   
+   Comandos firewalld (CentOS):
+   sudo firewall-cmd --permanent --add-service=http
+   sudo firewall-cmd --permanent --add-service=https
+   sudo firewall-cmd --reload
+
+2. PROTEGER ARCHIVO .env
+   ────────────────────────────────────────────────────────────────────────
+   Agrega a .htaccess en la raíz del proyecto:
+   
+   <Files ".env">
+       Require all denied
+   </Files>
+   
+   O en la configuración de Apache:
+   
+   <FilesMatch "^\.env">
+       Require all denied
+   </FilesMatch>
+
+3. DESHABILITAR LISTADO DE DIRECTORIOS
+   ────────────────────────────────────────────────────────────────────────
+   En tu VirtualHost o .htaccess:
+   
+   Options -Indexes
+
+4. HEADERS DE SEGURIDAD
+   ────────────────────────────────────────────────────────────────────────
+   Agrega a tu VirtualHost:
+   
+   Header set X-Content-Type-Options "nosniff"
+   Header set X-Frame-Options "SAMEORIGIN"
+   Header set X-XSS-Protection "1; mode=block"
+
+
+🌐 CONFIGURACIÓN SSL/HTTPS (OBLIGATORIO PARA PRODUCCIÓN)
+───────────────────────────────────────────────────────────────────────────
+
+1. INSTALAR CERTBOT (LET'S ENCRYPT)
+   ────────────────────────────────────────────────────────────────────────
+   sudo apt-get update
+   sudo apt-get install certbot python3-certbot-apache
+
+2. OBTENER CERTIFICADO
+   ────────────────────────────────────────────────────────────────────────
+   sudo certbot --apache -d tudominio.com -d www.tudominio.com
+   
+   Esto configurará automáticamente:
+   - Certificado SSL
+   - Redirección HTTP → HTTPS
+   - Renovación automática
+
+3. VERIFICAR RENOVACIÓN AUTOMÁTICA
+   ────────────────────────────────────────────────────────────────────────
+   sudo certbot renew --dry-run
+
+4. ACTUALIZAR URLs EN .env
+   ────────────────────────────────────────────────────────────────────────
+   Cambia todas las URLs de http:// a https:// en tu archivo .env:
+   
+   PAYPAL_RETURN_URL=https://tudominio.com/frontend/checkout.php?success=true
+   PAYPAL_CANCEL_URL=https://tudominio.com/frontend/checkout.php?canceled=true
+   AUTH0_REDIRECT_URI=https://tudominio.com/frontend/callback.php
+   APP_URL=https://tudominio.com
+
+
+📝 CONFIGURACIÓN DE BASE DE DATOS
+───────────────────────────────────────────────────────────────────────────
+
+1. CREAR BASE DE DATOS
+   ────────────────────────────────────────────────────────────────────────
+   mysql -u root -p
+   
+   CREATE DATABASE esfero CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER 'esfero_user'@'localhost' IDENTIFIED BY 'tu_password_seguro';
+   GRANT ALL PRIVILEGES ON esfero.* TO 'esfero_user'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+
+2. IMPORTAR ESQUEMA
+   ────────────────────────────────────────────────────────────────────────
+   mysql -u esfero_user -p esfero < /var/www/html/esfero/sql/esfero_completo_local.sql
+
+3. ACTUALIZAR .env CON CREDENCIALES DE PRODUCCIÓN
+   ────────────────────────────────────────────────────────────────────────
+   DB_HOST=localhost
+   DB_NAME=esfero
+   DB_USER=esfero_user
+   DB_PASSWORD=tu_password_seguro
+   DB_PORT=3306
+
+
+🔄 ACTUALIZAR CONFIGURACIÓN DE AUTH0 Y PAYPAL
+───────────────────────────────────────────────────────────────────────────
+
+1. AUTH0 DASHBOARD
+   ────────────────────────────────────────────────────────────────────────
+   Actualiza las URLs permitidas:
+   
+   Allowed Callback URLs:
+   https://tudominio.com/frontend/callback.php
+   
+   Allowed Logout URLs:
+   https://tudominio.com/frontend/index.php
+   
+   Allowed Web Origins:
+   https://tudominio.com
+
+2. PAYPAL DASHBOARD
+   ────────────────────────────────────────────────────────────────────────
+   • Cambia de Sandbox a Live cuando estés listo
+   • Actualiza las URLs de retorno en tu .env
+   • Usa las credenciales de producción (Live) en lugar de Sandbox
+
+
+✅ CHECKLIST DE DESPLIEGUE EN SERVIDOR
+───────────────────────────────────────────────────────────────────────────
+
+INSTALACIÓN:
+□ Apache instalado y funcionando
+□ PHP 7.4+ instalado con todas las extensiones
+□ Python 3.7+ instalado
+□ Librerías Python instaladas (requests, python-jose, cryptography)
+□ MySQL/MariaDB instalado y funcionando
+
+CONFIGURACIÓN APACHE:
+□ Módulos habilitados (rewrite, ssl, headers, cgi)
+□ Python CGI configurado
+□ VirtualHost configurado
+□ Permisos de archivos correctos
+□ .env protegido
+
+SEGURIDAD:
+□ Firewall configurado (puertos 80 y 443 abiertos)
+□ SSL/HTTPS configurado
+□ Headers de seguridad agregados
+□ Listado de directorios deshabilitado
+
+BASE DE DATOS:
+□ Base de datos 'esfero' creada
+□ Usuario de base de datos creado
+□ Esquema importado
+□ .env actualizado con credenciales de producción
+
+APLICACIÓN:
+□ Archivos subidos al servidor
+□ Archivo .env creado con todas las variables
+□ URLs actualizadas a HTTPS
+□ Auth0 URLs actualizadas en Dashboard
+□ PayPal configurado (Sandbox o Live)
+
+PRUEBAS:
+□ Sitio accesible vía HTTPS
+□ Login con Auth0 funciona
+□ API Python responde correctamente
+□ PayPal funciona (crear orden y capturar pago)
+□ Base de datos conecta correctamente
+
+
+🚨 COMANDOS ÚTILES PARA TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────────
+
+# Ver logs de Apache
+sudo tail -f /var/log/apache2/error.log
+sudo tail -f /var/log/apache2/esfero_error.log
+
+# Verificar configuración de Apache
+sudo apache2ctl configtest
+
+# Reiniciar Apache
+sudo systemctl restart apache2
+
+# Verificar que Python funciona
+python3 --version
+python3 -c "import requests; print('OK')"
+
+# Verificar permisos
+ls -la /var/www/html/esfero/backend/cgi-bin/
+
+# Probar script Python directamente
+python3 /var/www/html/esfero/backend/cgi-bin/paypal.py
+
+
+═══════════════════════════════════════════════════════════════════════════
+RESUMEN: Necesitas crear el archivo .env y configurar variables para Python
+═══════════════════════════════════════════════════════════════════════════
+

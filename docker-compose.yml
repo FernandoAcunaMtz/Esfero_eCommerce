@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+
+  # ── Base de datos MySQL 8 ────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: esfero_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: esfero
+      MYSQL_USER: esfero_user
+      MYSQL_PASSWORD: esfero_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - esfero_db_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── App: Apache + PHP + Python CGI ──────────────────────────
+  app:
+    build: .
+    container_name: esfero_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      # Base de datos
+      DB_HOST: db
+      DB_NAME: esfero
+      DB_USER: esfero_user
+      DB_PASSWORD: esfero_pass
+      DB_PORT: 3306
+      DB_CHARSET: utf8mb4
+      # PayPal (sandbox — mismos valores que tu .env original)
+      PAYPAL_MODE: ${PAYPAL_MODE:-sandbox}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
+      PAYPAL_RETURN_URL: http://localhost:8080/checkout.php?success=true
+      PAYPAL_CANCEL_URL: http://localhost:8080/checkout.php?canceled=true
+      PAYPAL_CURRENCY: MXN
+      # JWT
+      JWT_PRIVATE_KEY: /var/www/esfero/backend/keys/jwt_private.pem
+      JWT_PUBLIC_KEY: /var/www/esfero/backend/keys/jwt_public.pem
+      JWT_EXPIRATION_HOURS: 24
+      # App
+      APP_NAME: Esfero Marketplace
+      APP_ENV: development
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      APP_SECRET: docker-dev-secret-change-in-production
+      API_BASE_URL: http://localhost/esfero/backend/cgi-bin
+      API_TIMEOUT: 30
+      API_VERIFY_SSL: "false"
+      SESSION_LIFETIME: 120
+    volumes:
+      - ./frontend:/var/www/esfero/frontend
+      - ./backend:/var/www/esfero/backend
+      - ./config:/var/www/esfero/config
+      - ./.env:/var/www/esfero/.env:ro
+
+volumes:
+  esfero_db_data:
+    driver: local

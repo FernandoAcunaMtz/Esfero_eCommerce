@@ -1,0 +1,7 @@
+# Charset por defecto para todos los archivos servidos
+AddDefaultCharset UTF-8
+
+# Cabecera explícita para HTML/PHP
+<IfModule mod_mime.c>
+    AddCharset UTF-8 .php .html .htm .css .js
+</IfModule>
