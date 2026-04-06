@@ -83,7 +83,7 @@ if ($user_id) {
 <body>
     <?php include 'components/navbar.php'; ?>
     
-    <section style="padding: 6rem 0 4rem; background: #f8f9fa;">
+    <section style="padding: 6rem 0 4rem; background: var(--c-bg, #F2F9FB);">
         <div class="container">
             <h1 style="font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 0.5rem;">Mis Favoritos</h1>
             <p style="color: #666; margin-bottom: 3rem; font-size: clamp(0.9rem, 2vw, 1rem);">Productos que te interesan</p>

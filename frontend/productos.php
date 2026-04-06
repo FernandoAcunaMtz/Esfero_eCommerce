@@ -273,9 +273,9 @@ if ($destacados) {
 
     <?php if ($destacados): ?>
     <!-- Secciones Especiales de Destacados - TEMPORALMENTE COMENTADO PARA DEBUG -->
-    <section class="sections" style="padding: 3rem 0; background: #f8f9fa;">
+    <section class="sections" style="padding: 3rem 0; background: var(--c-bg, #F2F9FB);">
         <div class="container">
-            
+
             <!-- Lista básica de productos destacados (funcionalidad original) -->
             <?php if (!empty($productos)): ?>
             <div class="portfolio-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;">
@@ -299,26 +299,27 @@ if ($destacados) {
                     $icono_favorito = $es_favorito ? 'fas fa-heart' : 'far fa-heart';
                     $color_favorito = $es_favorito ? '#ff4d4f' : '#0D87A8';
                 ?>
-                <a href="producto.php?id=<?php echo $producto['id']; ?>" class="portfolio-item animate-in" style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-decoration: none; color: inherit; display: block; opacity: 1 !important; transform: translateY(0) scale(1) !important; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';">
-                    <div style="position: relative; overflow: hidden; border-radius: 12px 12px 0 0; aspect-ratio: 1/1; background: #f5f8ff;">
+                <a href="producto.php?id=<?php echo $producto['id']; ?>" class="portfolio-item animate-in" style="text-decoration:none; color:inherit; display:block;">
+                    <div style="position:relative; overflow:hidden; aspect-ratio:1/1; background:#EEF8FA;">
                         <?php if ($imagen): ?>
-                        <img src="<?php echo $imagen; ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                        <img src="<?php echo $imagen; ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
                         <?php else: ?>
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f5f8ff; color: #999;">
-                            <span>Sin imagen</span>
-                        </div>
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#8BB4C0;"><i class="fas fa-image" style="font-size:2rem;"></i></div>
                         <?php endif; ?>
-                        <span style="position: absolute; top: 10px; left: 10px; background: #0C9268; color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; z-index: 2;"><?php echo htmlspecialchars($estado_texto); ?></span>
-                        <button onclick="event.stopPropagation(); event.preventDefault(); toggleFavorite(<?php echo (int)$producto['id']; ?>, this);" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: all 0.3s ease;" data-producto-id="<?php echo (int)$producto['id']; ?>" title="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>">
-                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size: 1.1rem;"></i>
+                        <span style="position:absolute; top:10px; left:10px; background:rgba(11,45,60,0.72); backdrop-filter:blur(4px); color:white; padding:0.2rem 0.5rem; border-radius:6px; font-size:0.72rem; font-weight:600; z-index:2;"><?php echo htmlspecialchars($estado_texto); ?></span>
+                        <button onclick="event.stopPropagation(); event.preventDefault(); toggleFavorite(<?php echo (int)$producto['id']; ?>, this);"
+                                style="position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:3; box-shadow:0 2px 8px rgba(0,0,0,0.12); transition:transform 0.15s; backdrop-filter:blur(4px);"
+                                data-producto-id="<?php echo (int)$producto['id']; ?>"
+                                title="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>">
+                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size:1rem;"></i>
                         </button>
                     </div>
-                    <div style="padding: 1rem; background: #ffffff;">
-                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color: #333; font-weight: 600; min-height: 2.5rem;"><?php echo htmlspecialchars($producto['titulo']); ?></h3>
-                        <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <p style="font-size: 1.25rem; font-weight: 700; color: #0C9268; margin: 0;"><?php echo $precio_formateado; ?></p>
+                    <div class="card-footer">
+                        <h3 class="card-title"><?php echo htmlspecialchars($producto['titulo']); ?></h3>
+                        <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.4rem;">
+                            <span class="card-price"><?php echo $precio_formateado; ?></span>
                         </div>
-                        <p style="font-size: 0.85rem; color: #666; margin: 0;"><i class="fas fa-map-marker-alt" style="color: #0C9268;"></i> <?php echo htmlspecialchars($ubicacion); ?></p>
+                        <p class="card-location"><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($ubicacion); ?></p>
                     </div>
                 </a>
                 <?php endforeach; ?>
@@ -347,7 +348,7 @@ if ($destacados) {
             <div style="display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem;" id="productsLayout">
                 
                 <!-- Sidebar de Filtros -->
-                <aside id="filtersSidebar" style="background: #f8f9fa; padding: 1rem; border-radius: 12px; height: fit-content; max-height: calc(100vh - 120px); overflow-y: auto; position: sticky; top: 80px;">
+                <aside id="filtersSidebar" style="background: #EEF8FA; padding: 1rem; border-radius: 12px; height: fit-content; max-height: calc(100vh - 120px); overflow-y: auto; position: sticky; top: 80px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600;">Filtros</h3>
                         <button id="mobileFiltersClose" style="display: none; background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer; padding: 0.25rem;">

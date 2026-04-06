@@ -86,7 +86,7 @@ $imagen_principal = $producto['imagen_principal'] ?? 'https://via.placeholder.co
 <body>
     <?php include 'components/navbar.php'; ?>
     
-    <section style="padding: 6rem 0 4rem; background: #f8f9fa;">
+    <section style="padding: 6rem 0 4rem; background: var(--c-bg, #F2F9FB);">
         <div class="container">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" id="productDetailLayout">
                 

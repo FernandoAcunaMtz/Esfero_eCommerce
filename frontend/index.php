@@ -73,20 +73,20 @@ if (!is_logged_in()) {
             </div>
 
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; padding: 0 0.5rem;">
-                <a href="#categorias" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; background: #0D87A8; flex: 1 1 auto;">Explorar categorías</a>
-                <a href="<?php echo $vender_url; ?>" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; background: #0D87A8; flex: 1 1 auto;">Vender ahora</a>
+                <a href="#categorias" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; flex: 1 1 auto;">Explorar categorías</a>
+                <a href="<?php echo $vender_url; ?>" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); box-shadow: 0 4px 18px rgba(249,115,22,0.35); flex: 1 1 auto;">Vender ahora</a>
             </div>
         </div>
     </section>
     <!-- Productos destacados Section -->
-    <section class="sections" id="destacados" style="background: linear-gradient(135deg, #EEF8FA 0%, #e9ecef 100%); margin: 0; width: 100%; display: block;">
+    <section class="sections" id="destacados" style="background: linear-gradient(135deg, #EEF8FA 0%, #daf3f9 100%); margin: 0; width: 100%; display: block;">
         <div class="container">
             <h2 class="section-title">Productos destacados</h2>
             <div id="quick-filters" style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; margin:-0.5rem 0 1.25rem;">
-                <button class="cta-button" style="background:#E3F5FA; color:#0D87A8; border:1px solid #d6e6ff;">Hasta $1,500</button>
-                <button class="cta-button" style="background:#E3F5FA; color:#0D87A8; border:1px solid #d6e6ff;">Con envío gratis</button>
-                <button class="cta-button" style="background:#E3F5FA; color:#0D87A8; border:1px solid #d6e6ff;">Como nuevo</button>
-                <button class="cta-button" style="background:#E3F5FA; color:#0D87A8; border:1px solid #d6e6ff;">Solo en tu ciudad</button>
+                <button class="filter-chip"><i class="fas fa-tag"></i> Hasta $1,500</button>
+                <button class="filter-chip"><i class="fas fa-truck"></i> Envío gratis</button>
+                <button class="filter-chip"><i class="fas fa-star"></i> Como nuevo</button>
+                <button class="filter-chip"><i class="fas fa-map-marker-alt"></i> En tu ciudad</button>
             </div>
             <p style="text-align: center; font-size: 1.2rem; color: #2B2B2B; margin-bottom: 1.5rem; width: 100%; margin-left: auto; margin-right: auto;">
                 Ofertas seleccionadas por el equipo de Esfero. Encuentra artículos usados en excelente estado.
@@ -117,26 +117,40 @@ if (!is_logged_in()) {
                         $icono_favorito = $es_favorito ? 'fas fa-heart' : 'far fa-heart';
                         $color_favorito = $es_favorito ? '#ff4d4f' : '#0D87A8';
                     ?>
-                <a href="producto.php?id=<?php echo $producto['id']; ?>" class="portfolio-item animate-in" style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-decoration: none; color: inherit; display: block; opacity: 1 !important; transform: translateY(0) scale(1) !important; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-4px) scale(1)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.12)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';">
-                    <div style="position: relative; overflow: hidden; border-radius: 12px 12px 0 0; aspect-ratio: 1/1; background: #f5f8ff;">
+                <a href="producto.php?id=<?php echo $producto['id']; ?>" class="portfolio-item animate-in" style="text-decoration:none; color:inherit; display:block;">
+                    <div style="position:relative; overflow:hidden; aspect-ratio:1/1; background:#EEF8FA;">
                         <?php if ($imagen): ?>
-                        <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onerror="this.src='https://placehold.co/400x400?text=Sin+imagen'">
+                        <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/400x400?text=Sin+imagen'">
                         <?php else: ?>
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f5f8ff; color: #999;">
-                            <span>Sin imagen</span>
-                        </div>
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#8BB4C0;"><i class="fas fa-image" style="font-size:2rem;"></i></div>
                         <?php endif; ?>
-                        <span style="position: absolute; top: 10px; left: 10px; background: #0C9268; color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; z-index: 2;"><?php echo htmlspecialchars($estado_texto); ?></span>
-                        <button onclick="event.stopPropagation(); event.preventDefault(); toggleFavorite(<?php echo (int)$producto['id']; ?>, this);" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: all 0.3s ease;" data-producto-id="<?php echo (int)$producto['id']; ?>" title="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>">
-                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size: 1.1rem;"></i>
+                        <!-- Badge estado del producto -->
+                        <span style="position:absolute; top:10px; left:10px; background:rgba(11,45,60,0.72); backdrop-filter:blur(4px); color:white; padding:0.2rem 0.5rem; border-radius:6px; font-size:0.72rem; font-weight:600; z-index:2;"><?php echo htmlspecialchars($estado_texto); ?></span>
+                        <!-- Botón favorito -->
+                        <button onclick="event.stopPropagation(); event.preventDefault(); toggleFavorite(<?php echo (int)$producto['id']; ?>, this);"
+                                style="position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:3; box-shadow:0 2px 8px rgba(0,0,0,0.12); transition:transform 0.15s; backdrop-filter:blur(4px);"
+                                data-producto-id="<?php echo (int)$producto['id']; ?>"
+                                title="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>">
+                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size:1rem;"></i>
                         </button>
                     </div>
-                    <div style="padding: 1rem; background: #ffffff;">
-                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color: #333; font-weight: 600; min-height: 2.5rem;"><?php echo htmlspecialchars($producto['titulo']); ?></h3>
-                        <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <p style="font-size: 1.25rem; font-weight: 700; color: #0C9268; margin: 0;"><?php echo $precio_formateado; ?></p>
+                    <div class="card-footer">
+                        <h3 class="card-title"><?php echo htmlspecialchars($producto['titulo']); ?></h3>
+                        <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.4rem;">
+                            <span class="card-price"><?php echo $precio_formateado; ?></span>
+                            <?php if ($precio_original && $descuento > 0): ?>
+                                <span class="card-price-original"><?php echo $precio_original; ?></span>
+                                <span class="card-discount-badge">-<?php echo $descuento ?>%</span>
+                            <?php endif; ?>
                         </div>
-                        <p style="font-size: 0.85rem; color: #666; margin: 0;"><i class="fas fa-map-marker-alt" style="color: #0C9268;"></i> <?php echo htmlspecialchars($ubicacion); ?></p>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:0.4rem;">
+                            <p class="card-location"><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($ubicacion); ?></p>
+                            <?php if (!empty($producto['envio_gratis'])): ?>
+                                <span class="card-shipping-badge"><i class="fas fa-truck"></i> Gratis</span>
+                            <?php elseif (!empty($producto['envio_disponible'])): ?>
+                                <span class="card-shipping-badge"><i class="fas fa-truck"></i> Envío</span>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </a>
                 <?php endforeach; ?>
@@ -146,7 +160,7 @@ if (!is_logged_in()) {
     </section>
 
 <!-- Sobre Nosotros Section -->
-    <section class="sections" id="sobre-nosotros" style="background-color: rgba(25,25,112,0.7); background-image: url('https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=1600'); background-blend-mode: multiply; background-size: cover; background-position: center; background-repeat: no-repeat; position: relative;" data-parallax-speed="0.12">
+    <section class="sections" id="sobre-nosotros" style="background-color: rgba(4,78,101,0.88); background-image: url('https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=1600'); background-blend-mode: multiply; background-size: cover; background-position: center; background-repeat: no-repeat; position: relative;" data-parallax-speed="0.12">
         <div class="container">
             <h2 class="section-title" style="color: white;">Sobre Esfero</h2>
             <div style="width: 100%; margin: 0 auto; text-align: center; color: white;">
