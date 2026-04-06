@@ -6,8 +6,32 @@ require_once __DIR__ . '/includes/api_helper.php';
 require_once __DIR__ . '/includes/csrf.php';
 
 require_login();
-$user = get_session_user();
-$flash = get_flash_message();
+$user       = get_session_user();
+$usuario_id = $user['id'] ?? null;
+$flash      = get_flash_message();
+
+// Cargar datos reales de la DB
+$db_user    = [];
+$db_perfil  = [];
+
+if ($usuario_id && isset($pdo)) {
+    try {
+        $stmt = $pdo->prepare("SELECT nombre, apellidos, email, telefono FROM usuarios WHERE id = ?");
+        $stmt->execute([$usuario_id]);
+        $db_user = $stmt->fetch() ?: [];
+
+        $stmt = $pdo->prepare("SELECT descripcion, ubicacion_estado, ubicacion_ciudad, codigo_postal FROM perfiles WHERE usuario_id = ?");
+        $stmt->execute([$usuario_id]);
+        $db_perfil = $stmt->fetch() ?: [];
+    } catch (PDOException $e) {
+        error_log('configuracion.php — ' . $e->getMessage());
+    }
+}
+
+// Helper para mostrar valor en input
+function val(string $key, array $arr): string {
+    return htmlspecialchars($arr[$key] ?? '', ENT_QUOTES, 'UTF-8');
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -283,33 +307,81 @@ $flash = get_flash_message();
                     <h2 class="section-title">
                         <i class="fas fa-user"></i> Datos Personales
                     </h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nombre *</label>
-                            <input type="text" value="Fernando" required>
+                    <form method="POST" action="process_configuracion.php">
+                        <?= csrf_field() ?>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre *</label>
+                                <input type="text" name="nombre"
+                                       value="<?= val('nombre', $db_user) ?>" required maxlength="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos</label>
+                                <input type="text" name="apellidos"
+                                       value="<?= val('apellidos', $db_user) ?>" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Correo electrónico</label>
+                                <input type="email" value="<?= val('email', $db_user) ?>"
+                                       disabled style="background:#f5f5f5;cursor:not-allowed;color:#999;">
+                                <small style="color:#999;font-size:0.8rem;">El correo no puede modificarse.</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                <input type="tel" name="telefono"
+                                       value="<?= val('telefono', $db_user) ?>"
+                                       placeholder="+52 55 1234 5678" maxlength="20">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Apellido *</label>
-                            <input type="text" value="Acuña" required>
+                            <label>Biografía</label>
+                            <textarea name="descripcion" rows="4"
+                                      placeholder="Cuéntanos un poco sobre ti..."
+                                      maxlength="500"><?= val('descripcion', $db_perfil) ?></textarea>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Email *</label>
-                            <input type="email" value="fernando@email.com" required>
+                        <h3 style="color:#0D87A8;font-size:1.1rem;margin:0 0 1rem;">
+                            <i class="fas fa-map-marker-alt"></i> Ubicación
+                        </h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <select name="ubicacion_estado">
+                                    <option value="">Selecciona...</option>
+                                    <?php
+                                    $estados = ['CDMX','Estado de México','Jalisco','Nuevo León','Veracruz',
+                                                'Puebla','Guanajuato','Chihuahua','Sonora','Baja California',
+                                                'Coahuila','Tamaulipas','Sinaloa','Oaxaca','Guerrero',
+                                                'Michoacán','Hidalgo','Querétaro','San Luis Potosí','Yucatán',
+                                                'Morelos','Tabasco','Campeche','Zacatecas','Aguascalientes',
+                                                'Durango','Colima','Nayarit','Quintana Roo','Tlaxcala',
+                                                'Chiapas','Baja California Sur'];
+                                    foreach ($estados as $e):
+                                        $selected = ($db_perfil['ubicacion_estado'] ?? '') === $e ? 'selected' : '';
+                                    ?>
+                                        <option value="<?= htmlspecialchars($e) ?>" <?= $selected ?>><?= htmlspecialchars($e) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Ciudad</label>
+                                <input type="text" name="ubicacion_ciudad"
+                                       value="<?= val('ubicacion_ciudad', $db_perfil) ?>"
+                                       placeholder="Tu ciudad" maxlength="100">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Teléfono *</label>
-                            <input type="tel" value="+52 123 456 7890" required>
+                        <div class="form-group" style="max-width:200px;">
+                            <label>Código Postal</label>
+                            <input type="text" name="codigo_postal"
+                                   value="<?= val('codigo_postal', $db_perfil) ?>"
+                                   placeholder="00000" maxlength="10"
+                                   pattern="\d{4,10}">
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Biografía</label>
-                        <textarea rows="4" placeholder="Cuéntanos sobre ti..."></textarea>
-                    </div>
-                    <button class="cta-button">
-                        <i class="fas fa-save"></i> Guardar Cambios
-                    </button>
+                        <button type="submit" class="cta-button">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </form>
                 </div>
                 
                 <!-- Seguridad -->
@@ -371,76 +443,76 @@ $flash = get_flash_message();
                     <h2 class="section-title">
                         <i class="fas fa-bell"></i> Notificaciones
                     </h2>
-                    
+                    <p style="color:#666;font-size:0.9rem;margin-bottom:1.5rem;">
+                        Esfero te enviará correos automáticos para los siguientes eventos:
+                    </p>
                     <div class="notif-item">
                         <div>
-                            <strong style="color: #0D87A8;">Notificaciones por Email</strong>
-                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Recibe actualizaciones por correo</p>
+                            <strong style="color:#0D87A8;">Bienvenida al registrarte</strong>
+                            <p style="margin:0;color:#666;font-size:0.9rem;">Correo de confirmación al crear tu cuenta</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <span style="color:#0C9268;font-size:0.85rem;font-weight:600;"><i class="fas fa-check-circle"></i> Activo</span>
                     </div>
-                    
                     <div class="notif-item">
                         <div>
-                            <strong style="color: #0D87A8;">Nuevas Ofertas</strong>
-                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Alertas de productos y descuentos</p>
+                            <strong style="color:#0D87A8;">Confirmación de compra</strong>
+                            <p style="margin:0;color:#666;font-size:0.9rem;">Resumen detallado tras completar un pago</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <span style="color:#0C9268;font-size:0.85rem;font-weight:600;"><i class="fas fa-check-circle"></i> Activo</span>
                     </div>
-                    
-                    <div class="notif-item">
+                    <div class="notif-item" style="border-bottom:none;">
                         <div>
-                            <strong style="color: #0D87A8;">Estado de Pedidos</strong>
-                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Actualizaciones de tus compras</p>
+                            <strong style="color:#0D87A8;">Mensajes recibidos</strong>
+                            <p style="margin:0;color:#666;font-size:0.9rem;">Notificación cuando alguien te escribe</p>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="notif-item">
-                        <div>
-                            <strong style="color: #0D87A8;">Mensajes de Vendedores</strong>
-                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Comunicación con vendedores</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
+                        <span style="color:#0C9268;font-size:0.85rem;font-weight:600;"><i class="fas fa-check-circle"></i> Activo</span>
                     </div>
                 </div>
-                
-                <!-- Métodos de Pago -->
+
+                <!-- Pagos -->
                 <div class="form-section" id="pagos">
                     <h2 class="section-title">
-                        <i class="fas fa-credit-card"></i> Métodos de Pago
+                        <i class="fas fa-credit-card"></i> Pagos
                     </h2>
-                    
-                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <i class="fas fa-credit-card" style="font-size: 2rem; color: #0D87A8;"></i>
-                                <div>
-                                    <strong style="color: #0D87A8;">Visa •••• 4242</strong>
-                                    <p style="margin: 0; color: #666; font-size: 0.85rem;">Vence 12/25</p>
-                                </div>
-                            </div>
-                            <button style="background: none; border: none; color: #F6A623; cursor: pointer;">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                    <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:12px;padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;">
+                        <i class="fab fa-paypal" style="font-size:2rem;color:#003087;flex-shrink:0;margin-top:2px;"></i>
+                        <div>
+                            <strong style="color:#003087;display:block;margin-bottom:0.25rem;">PayPal Sandbox</strong>
+                            <p style="margin:0;color:#555;font-size:0.9rem;line-height:1.6;">
+                                Todos los pagos en Esfero se procesan de forma segura a través de PayPal.
+                                No almacenamos datos de tarjetas — el pago se gestiona directamente en la plataforma de PayPal.
+                            </p>
                         </div>
                     </div>
-                    
-                    <button class="cta-button" style="background: white; color: #0D87A8; border: 2px solid #0D87A8;">
-                        <i class="fas fa-plus"></i> Agregar Método de Pago
-                    </button>
+                    <?php
+                    // Mostrar total gastado por el usuario
+                    $total_gastado = 0;
+                    $num_ordenes   = 0;
+                    if (isset($pdo)) {
+                        try {
+                            $stmt = $pdo->prepare("SELECT COUNT(*) as n, COALESCE(SUM(total),0) as t FROM ordenes WHERE comprador_id = ? AND estado_pago = 'completado'");
+                            $stmt->execute([$usuario_id]);
+                            $row = $stmt->fetch();
+                            $total_gastado = (float)$row['t'];
+                            $num_ordenes   = (int)$row['n'];
+                        } catch (PDOException $e) {}
+                    }
+                    ?>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;">
+                        <div style="background:#f8fffe;border:1.5px solid #a7f3d0;border-radius:12px;padding:1.25rem;text-align:center;">
+                            <div style="font-size:1.6rem;font-weight:800;color:#0C9268;"><?= $num_ordenes ?></div>
+                            <div style="font-size:0.85rem;color:#555;margin-top:0.25rem;">Compras realizadas</div>
+                        </div>
+                        <div style="background:#f8fffe;border:1.5px solid #a7f3d0;border-radius:12px;padding:1.25rem;text-align:center;">
+                            <div style="font-size:1.6rem;font-weight:800;color:#0C9268;">$<?= number_format($total_gastado, 2) ?></div>
+                            <div style="font-size:0.85rem;color:#555;margin-top:0.25rem;">Total gastado (MXN)</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem;">
+                        <a href="compras.php" class="cta-button" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">
+                            <i class="fas fa-shopping-bag"></i> Ver historial de compras
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Zona Peligrosa -->
