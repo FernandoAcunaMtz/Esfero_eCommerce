@@ -14,6 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/includes/api_helper.php';
 require_once __DIR__ . '/includes/auth_middleware.php';
 require_once __DIR__ . '/assets/db_direct.php';
+require_once __DIR__ . '/includes/mailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: registro.php');
@@ -105,6 +106,9 @@ save_user_token(bin2hex(random_bytes(32)));
 
 $_SESSION['last_activity'] = time();
 $_SESSION['login_time']    = time();
+
+// Enviar correo de bienvenida (fallo silencioso — no bloquea el registro)
+enviar_bienvenida($email, $nombre);
 
 header('Location: ' . get_redirect_by_role($rol));
 exit;

@@ -7,6 +7,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/includes/db_connection.php';
 require_once __DIR__ . '/includes/api_helper.php';
+require_once __DIR__ . '/includes/mailer.php';
 
 if (!is_logged_in() || is_admin()) {
     http_response_code(401);
@@ -156,6 +157,35 @@ try {
         'error'   => 'Pago recibido pero error al confirmar la orden. Contacta a soporte con tu ID: ' . $paypal_order_id,
     ]);
     exit;
+}
+
+// Enviar confirmación de compra por correo
+$stmt_mail = $pdo->prepare("
+    SELECT u.email, u.nombre,
+           o.numero_orden, o.total,
+           oi.producto_titulo AS titulo, oi.cantidad, oi.precio_unitario AS precio
+    FROM ordenes o
+    JOIN usuarios u ON u.id = o.comprador_id
+    JOIN orden_items oi ON oi.orden_id = o.id
+    WHERE o.id = ?
+");
+$stmt_mail->execute([$orden_ids[0] ?? 0]);
+$rows_mail = $stmt_mail->fetchAll();
+
+if (!empty($rows_mail)) {
+    $items_mail = array_map(fn($r) => [
+        'titulo'   => $r['titulo'],
+        'cantidad' => $r['cantidad'],
+        'precio'   => $r['precio'],
+    ], $rows_mail);
+
+    enviar_confirmacion_orden(
+        $rows_mail[0]['email'],
+        $rows_mail[0]['nombre'],
+        $rows_mail[0]['numero_orden'],
+        (float)$rows_mail[0]['total'],
+        $items_mail
+    );
 }
 
 echo json_encode([

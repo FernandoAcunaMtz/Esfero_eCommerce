@@ -62,6 +62,13 @@ services:
       API_TIMEOUT: 30
       API_VERIFY_SSL: "false"
       SESSION_LIFETIME: 120
+      # Mailtrap SMTP (sandbox — correos de desarrollo, no envía correos reales)
+      MAIL_HOST: sandbox.smtp.mailtrap.io
+      MAIL_PORT: 2525
+      MAIL_USERNAME: 11eeca4fb94f02
+      MAIL_PASSWORD: ed807249d7fbb0
+      MAIL_FROM_ADDRESS: noreply@esfero.com
+      MAIL_FROM_NAME: Esfero Marketplace
     volumes:
       - ./frontend:/var/www/esfero/frontend
       - ./backend:/var/www/esfero/backend

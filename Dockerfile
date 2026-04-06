@@ -11,7 +11,12 @@ RUN apt-get update && apt-get install -y \
     openssl \
     libssl-dev \
     default-mysql-client \
+    curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# ── Composer ──────────────────────────────────────────────────
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # ── Extensiones PHP ──────────────────────────────────────────
 RUN docker-php-ext-install mysqli pdo pdo_mysql
@@ -33,6 +38,9 @@ COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # ── Código fuente ─────────────────────────────────────────────
 COPY . /var/www/esfero/
+
+# ── Dependencias PHP (PHPMailer) ──────────────────────────────
+RUN cd /var/www/esfero && composer install --no-dev --optimize-autoloader --no-interaction
 
 # ── Permisos CGI ─────────────────────────────────────────────
 RUN chmod +x /var/www/esfero/backend/cgi-bin/*.py && \
