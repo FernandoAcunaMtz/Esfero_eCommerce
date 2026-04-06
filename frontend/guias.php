@@ -300,7 +300,7 @@ try {
         }
     </style>
 </head>
-<body>
+<body class="has-hero">
     <?php include 'components/navbar.php'; ?>
     
     <!-- Hero -->
@@ -312,7 +312,7 @@ try {
     </section>
 
     <!-- Guías Destacadas -->
-    <section class="sections" style="background: #F4F4F4;">
+    <section class="sections" style="background: var(--c-bg, #F2F9FB);">
         <div class="container">
             <p style="text-align: center; font-size: 1.2rem; color: #2B2B2B; margin-bottom: 3rem;">
                 Aprende a comprar y vender mejor en Esfero

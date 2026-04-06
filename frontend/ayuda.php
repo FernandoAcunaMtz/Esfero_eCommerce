@@ -247,7 +247,7 @@ $categoria_iconos = [
     </section>
 
     <!-- Preguntas Frecuentes -->
-    <section class="sections" style="padding: 4rem 0; background: #F4F4F4;">
+    <section class="sections" style="padding: 4rem 0; background: var(--c-bg, #F2F9FB);">
         <div class="container">
             <h2 style="font-size: 2rem; margin-bottom: 2rem; text-align: center; color: #0D87A8;">Preguntas Frecuentes</h2>
             

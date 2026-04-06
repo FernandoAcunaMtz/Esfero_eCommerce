@@ -335,7 +335,7 @@ if (!is_logged_in()) {
     </section>
 
     <!-- Guías Section -->
-    <section class="sections" id="blog" style="background: #F4F4F4;" data-parallax-speed="0.14">
+    <section class="sections" id="blog" style="background: var(--c-bg, #F2F9FB);" data-parallax-speed="0.14">
         <div class="container">
             <h2 class="section-title">Guías y Consejos</h2>
             <p style="text-align: center; font-size: 1.2rem; color: #2B2B2B; margin-bottom: 3rem; width: 100%; margin-left: auto; margin-right: auto;">
