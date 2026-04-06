@@ -56,4 +56,9 @@ RUN mkdir -p /var/www/esfero/backend/keys && \
     chmod 600 /var/www/esfero/backend/keys/jwt_private.pem && \
     chmod 644 /var/www/esfero/backend/keys/jwt_public.pem
 
+# ── Entrypoint (puerto dinámico Railway + migraciones) ───────
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 80
+CMD ["/entrypoint.sh"]

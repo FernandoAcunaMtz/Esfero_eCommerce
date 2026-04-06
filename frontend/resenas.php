@@ -86,7 +86,7 @@ if ($filtro_tipo !== 'todas') {
     $params[] = $filtro_tipo;
 }
 
-$sql .= " ORDER BY c.fecha_calificacion DESC";
+$sql .= " ORDER BY c.fecha_creacion DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
