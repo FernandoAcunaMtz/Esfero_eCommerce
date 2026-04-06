@@ -343,15 +343,15 @@ unset($_SESSION['form_data']);
                         </div>
                     </div>
                     <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="envio_disponible" value="1" 
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; max-width: 100%; white-space: normal; word-break: break-word;">
+                            <input type="checkbox" name="envio_disponible" value="1" style="flex-shrink: 0;"
                                    <?php echo (isset($form_data['envio_disponible']) || !isset($form_data)) ? 'checked' : ''; ?>>
                             Ofrecer envío
                         </label>
                     </div>
                     <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="envio_gratis" value="1"
+                        <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; max-width: 100%; white-space: normal; word-break: break-word;">
+                            <input type="checkbox" name="envio_gratis" value="1" style="flex-shrink: 0;"
                                    <?php echo (isset($form_data['envio_gratis'])) ? 'checked' : ''; ?>>
                             Envío gratis
                         </label>

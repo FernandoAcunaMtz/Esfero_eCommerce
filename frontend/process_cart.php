@@ -6,10 +6,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-header('Content-Type: application/json; charset=utf-8');
-
 require_once __DIR__ . '/includes/db_connection.php';
 require_once __DIR__ . '/includes/api_helper.php';
+
+header('Content-Type: application/json; charset=utf-8');
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 if (!is_logged_in()) {
