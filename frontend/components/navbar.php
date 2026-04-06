@@ -12,6 +12,20 @@ require_once __DIR__ . '/../includes/db_connection.php';
 $current_user = get_session_user();
 $is_logged_in = is_logged_in();
 ?>
+<script>document.documentElement.classList.add('navbar-loaded');</script>
+<!-- safe-area teal fill — aplica en todas las páginas vía navbar -->
+<style>
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: env(safe-area-inset-top, 0px);
+    background: #044E65;
+    z-index: 10002;
+    pointer-events: none;
+  }
+  body { background-color: #EEF8FA; }
+</style>
 <!-- Navbar -->
 <nav class="navbar" id="navbar">
     <div class="nav-container">
