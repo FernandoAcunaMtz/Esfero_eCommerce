@@ -90,21 +90,34 @@ function plantilla_bienvenida(string $nombre): string {
     return <<<HTML
     <!DOCTYPE html>
     <html lang="es">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        @media only screen and (max-width: 620px) {
+          .email-wrapper { padding: 16px 0 !important; }
+          .email-card { border-radius: 0 !important; }
+          .email-body { padding: 24px 20px !important; }
+          .email-footer { padding: 16px 20px !important; }
+          .email-header { padding: 28px 20px !important; }
+          .btn-cta { display: block !important; text-align: center !important; }
+        }
+      </style>
+    </head>
     <body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:40px 0;">
-        <tr><td align="center">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+      <table width="100%" cellpadding="0" cellspacing="0" class="email-wrapper" style="background:#f4f6f9;padding:40px 0;">
+        <tr><td align="center" style="padding:0 16px;">
+          <table width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
             <!-- Header -->
             <tr>
-              <td style="background:linear-gradient(135deg,#044E65,#0D87A8,#0C9268);padding:40px 40px 30px;text-align:center;">
+              <td class="email-header" style="background:linear-gradient(135deg,#044E65,#0D87A8,#0C9268);padding:40px 40px 30px;text-align:center;">
                 <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">Esfero</h1>
                 <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Marketplace</p>
               </td>
             </tr>
             <!-- Body -->
             <tr>
-              <td style="padding:40px;">
+              <td class="email-body" style="padding:40px;">
                 <h2 style="margin:0 0 16px;color:#1a1a1a;font-size:22px;">¡Hola, {$nombre_safe}!</h2>
                 <p style="margin:0 0 16px;color:#555;font-size:15px;line-height:1.7;">
                   Tu cuenta en Esfero ha sido creada correctamente. A partir de ahora puedes explorar
@@ -113,16 +126,14 @@ function plantilla_bienvenida(string $nombre): string {
                 <p style="margin:0 0 28px;color:#555;font-size:15px;line-height:1.7;">
                   Si quieres vender, activa tu cuenta de vendedor desde tu perfil en cualquier momento.
                 </p>
-                <table cellpadding="0" cellspacing="0"><tr><td>
-                  <a href="http://localhost:8080" style="display:inline-block;background:linear-gradient(135deg,#0D87A8,#0C9268);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">
-                    Explorar el catálogo →
-                  </a>
-                </td></tr></table>
+                <a href="http://localhost:8080" class="btn-cta" style="display:inline-block;background:linear-gradient(135deg,#0D87A8,#0C9268);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">
+                  Explorar el catálogo →
+                </a>
               </td>
             </tr>
             <!-- Footer -->
             <tr>
-              <td style="background:#f8f9fa;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
+              <td class="email-footer" style="background:#f8f9fa;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
                 <p style="margin:0;color:#999;font-size:12px;">
                   Esfero Marketplace · Este correo fue generado automáticamente, por favor no respondas a este mensaje.
                 </p>
@@ -159,21 +170,34 @@ function plantilla_confirmacion_orden(string $nombre, string $numero_orden, floa
     return <<<HTML
     <!DOCTYPE html>
     <html lang="es">
-    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        @media only screen and (max-width: 620px) {
+          .email-wrapper { padding: 16px 0 !important; }
+          .email-card { border-radius: 0 !important; }
+          .email-body { padding: 24px 20px !important; }
+          .email-footer { padding: 16px 20px !important; }
+          .email-header { padding: 28px 20px !important; }
+          .btn-cta { display: block !important; text-align: center !important; }
+        }
+      </style>
+    </head>
     <body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f9;padding:40px 0;">
-        <tr><td align="center">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
+      <table width="100%" cellpadding="0" cellspacing="0" class="email-wrapper" style="background:#f4f6f9;padding:40px 0;">
+        <tr><td align="center" style="padding:0 16px;">
+          <table width="100%" cellpadding="0" cellspacing="0" class="email-card" style="max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
             <!-- Header -->
             <tr>
-              <td style="background:linear-gradient(135deg,#044E65,#0D87A8,#0C9268);padding:40px 40px 30px;text-align:center;">
+              <td class="email-header" style="background:linear-gradient(135deg,#044E65,#0D87A8,#0C9268);padding:40px 40px 30px;text-align:center;">
                 <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">Esfero</h1>
                 <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Confirmación de compra</p>
               </td>
             </tr>
             <!-- Body -->
             <tr>
-              <td style="padding:40px;">
+              <td class="email-body" style="padding:40px;">
                 <h2 style="margin:0 0 8px;color:#1a1a1a;font-size:22px;">¡Gracias por tu compra, {$nombre_safe}!</h2>
                 <p style="margin:0 0 24px;color:#666;font-size:14px;">Orden: <strong style="color:#0D87A8;">{$orden_safe}</strong></p>
 
@@ -202,16 +226,14 @@ function plantilla_confirmacion_orden(string $nombre, string $numero_orden, floa
                 <p style="margin:0 0 28px;color:#555;font-size:14px;line-height:1.7;">
                   Puedes revisar el estado de tu orden en cualquier momento desde tu historial de compras.
                 </p>
-                <table cellpadding="0" cellspacing="0"><tr><td>
-                  <a href="http://localhost:8080/compras.php" style="display:inline-block;background:linear-gradient(135deg,#0D87A8,#0C9268);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">
-                    Ver mis compras →
-                  </a>
-                </td></tr></table>
+                <a href="http://localhost:8080/compras.php" class="btn-cta" style="display:inline-block;background:linear-gradient(135deg,#0D87A8,#0C9268);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:700;">
+                  Ver mis compras →
+                </a>
               </td>
             </tr>
             <!-- Footer -->
             <tr>
-              <td style="background:#f8f9fa;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
+              <td class="email-footer" style="background:#f8f9fa;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
                 <p style="margin:0;color:#999;font-size:12px;">
                   Esfero Marketplace · Este correo fue generado automáticamente, por favor no respondas a este mensaje.
                 </p>
