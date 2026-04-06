@@ -90,7 +90,7 @@ $sql .= " ORDER BY c.fecha_calificacion DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
-$reseñas = $stmt->fetchAll();
+$resenas = $stmt->fetchAll();
 
 // Procesar respuesta a reseña
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responder_resena'])) {
@@ -356,9 +356,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responder_resena'])) 
                     <div class="estrellas">
                         <?php 
                         $promedio_redondeado = round($stats['promedio']);
-                        for ($i = 1; $i <= 5; $i++): 
+                        for ($i = 1; $i <= 5; $i++):
                         ?>
-                            <i class="fas fa-star<?php echo $i <= $promedio_redondeado ? '' : '-o'; ?>"></i>
+                            <i class="<?php echo $i <= $promedio_redondeado ? 'fas' : 'far'; ?> fa-star"></i>
                         <?php endfor; ?>
                     </div>
                     <p style="color: #666; margin: 0;">
@@ -395,14 +395,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responder_resena'])) 
                 </div>
                 
                 <!-- Lista de Reseñas -->
-                <?php if (empty($reseñas)): ?>
+                <?php if (empty($resenas)): ?>
                     <div style="background: white; padding: 4rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; color: #666;">
                         <i class="fas fa-star" style="font-size: 4rem; color: #ddd; margin-bottom: 1rem;"></i>
                         <h3 style="color: #666; margin-bottom: 0.5rem;">No tienes reseñas aún</h3>
                         <p style="color: #999;">Cuando recibas calificaciones, aparecerán aquí</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($reseñas as $resena): 
+                    <?php foreach ($resenas as $resena): 
                         $iniciales = strtoupper(substr($resena['calificador_nombre'], 0, 2));
                         $fecha_resena = date('d/m/Y', strtotime($resena['fecha_calificacion']));
                     ?>
@@ -420,7 +420,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responder_resena'])) 
                                 </div>
                                 <div class="resena-estrellas">
                                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <i class="fas fa-star<?php echo $i <= $resena['calificacion'] ? '' : '-o'; ?>"></i>
+                                        <i class="<?php echo $i <= $resena['calificacion'] ? 'fas' : 'far'; ?> fa-star"></i>
                                     <?php endfor; ?>
                                 </div>
                             </div>
