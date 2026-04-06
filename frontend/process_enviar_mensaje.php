@@ -69,7 +69,25 @@ try {
         VALUES (?, ?, ?, ?)
     ");
     $stmt->execute([$conversacion_id, $remitente_id, $destinatario_id, $mensaje]);
-    
+
+    // ── Notificar al destinatario ─────────────────────────────────────────
+    if (function_exists('crear_notificacion')) {
+        // Obtener nombre del remitente
+        $stmt_rem = $pdo->prepare("SELECT nombre FROM usuarios WHERE id = ?");
+        $stmt_rem->execute([$remitente_id]);
+        $nom_rem = $stmt_rem->fetchColumn() ?: 'Un usuario';
+        $preview = mb_strlen($mensaje, 'UTF-8') > 60
+            ? mb_substr($mensaje, 0, 60, 'UTF-8') . '…'
+            : $mensaje;
+        crear_notificacion(
+            $pdo, $destinatario_id, 'mensaje',
+            'Nuevo mensaje de ' . $nom_rem,
+            $preview,
+            'fas fa-envelope',
+            'mensajes.php?conversacion=' . urlencode($conversacion_id)
+        );
+    }
+
     header('Location: mensajes.php?conversacion=' . urlencode($conversacion_id));
     exit;
     

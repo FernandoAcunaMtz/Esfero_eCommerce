@@ -117,6 +117,38 @@ try {
             WHERE id = ?
         ")->execute([$payer_id, $transaction_id, $orden_id]);
 
+        // ── Notificación al comprador ──────────────────────────────────────
+        if (function_exists('crear_notificacion')) {
+            $stmt_on = $pdo->prepare("SELECT numero_orden, total FROM ordenes WHERE id = ?");
+            $stmt_on->execute([$orden_id]);
+            $on = $stmt_on->fetch();
+            if ($on) {
+                crear_notificacion(
+                    $pdo, $user_id, 'pago',
+                    '¡Pago confirmado!',
+                    'Tu orden #' . $on['numero_orden'] . ' ha sido pagada correctamente. Total: $' . number_format($on['total'], 2) . ' MXN.',
+                    'fas fa-circle-check',
+                    'compras.php'
+                );
+            }
+        }
+
+        // ── Notificación al vendedor ───────────────────────────────────────
+        if ($orden['vendedor_id'] && function_exists('crear_notificacion')) {
+            $stmt_ov = $pdo->prepare("SELECT numero_orden, total FROM ordenes WHERE id = ?");
+            $stmt_ov->execute([$orden_id]);
+            $ov = $stmt_ov->fetch();
+            if ($ov) {
+                crear_notificacion(
+                    $pdo, (int)$orden['vendedor_id'], 'orden',
+                    'Nueva venta recibida',
+                    'Recibiste un pago por la orden #' . $ov['numero_orden'] . '. Total: $' . number_format($ov['total'], 2) . ' MXN.',
+                    'fas fa-bag-shopping',
+                    'ventas.php'
+                );
+            }
+        }
+
         // Descontar stock y marcar vendido si stock llega a 0
         $items_stmt = $pdo->prepare(
             "SELECT producto_id, cantidad FROM orden_items WHERE orden_id = ?"

@@ -806,3 +806,64 @@ function api_get_order_details($orden_id) {
     return api_request("ordenes.py/details/{$orden_id}", 'GET', [], $token);
 }
 
+// ══════════════════════════════════════════════════════════════
+// NOTIFICACIONES — helpers directos a MySQL (sin API Python)
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Crea una notificación para un usuario.
+ * Requiere que $pdo esté disponible en el contexto del llamador.
+ *
+ * @param PDO    $pdo
+ * @param int    $usuario_id
+ * @param string $tipo      'mensaje'|'orden'|'pago'|'resena'|'sistema'
+ * @param string $titulo
+ * @param string $mensaje
+ * @param string $icono     Clase Font Awesome completa (ej. 'fas fa-envelope')
+ * @param string|null $url  URL relativa al hacer clic (ej. 'mensajes.php?conversacion=...')
+ */
+function crear_notificacion(PDO $pdo, int $usuario_id, string $tipo, string $titulo, string $mensaje, string $icono = 'fas fa-bell', ?string $url = null): void {
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, icono, url)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$usuario_id, $tipo, $titulo, $mensaje, $icono, $url]);
+    } catch (PDOException $e) {
+        error_log('crear_notificacion: ' . $e->getMessage());
+        // Fallo silencioso — no interrumpe el flujo principal
+    }
+}
+
+/**
+ * Devuelve el conteo de notificaciones NO leídas de un usuario.
+ */
+function get_notificaciones_count(PDO $pdo, int $usuario_id): int {
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM notificaciones WHERE usuario_id = ? AND leida = 0");
+        $stmt->execute([$usuario_id]);
+        return (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        return 0;
+    }
+}
+
+/**
+ * Devuelve las últimas N notificaciones de un usuario (para el dropdown del navbar).
+ */
+function get_notificaciones_recientes(PDO $pdo, int $usuario_id, int $limit = 5): array {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT id, tipo, titulo, mensaje, icono, url, leida, fecha_creacion
+            FROM notificaciones
+            WHERE usuario_id = ?
+            ORDER BY fecha_creacion DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$usuario_id, $limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+

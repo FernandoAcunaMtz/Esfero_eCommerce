@@ -158,6 +158,20 @@ try {
 
     $pdo->commit();
 
+    // ── Notificar al vendedor que recibió una reseña ──────────────────────
+    if (function_exists('crear_notificacion')) {
+        $stmt_cal = $pdo->prepare("SELECT nombre FROM usuarios WHERE id = ?");
+        $stmt_cal->execute([$user['id']]);
+        $nom_comp = $stmt_cal->fetchColumn() ?: 'Un comprador';
+        crear_notificacion(
+            $pdo, $vendedor_id, 'resena',
+            'Nueva reseña recibida',
+            $nom_comp . ' te dejó una reseña de ' . $cal_vendedor . ' estrella' . ($cal_vendedor !== 1 ? 's' : '') . '.',
+            'fas fa-star',
+            'resenas.php'
+        );
+    }
+
     redirect_with_message('compras.php', '¡Gracias por tu calificación! Tu opinión ayuda a toda la comunidad.', 'success');
 
 } catch (Exception $e) {
