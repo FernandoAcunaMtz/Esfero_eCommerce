@@ -11,5 +11,6 @@ echo "Corriendo seed...\n";
 flush();
 
 $output = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
+if (!$output) $output = shell_exec('find /var/www/esfero -name "seed_productos.php" 2>&1');
 echo $output;
 echo "\nListo.";
