@@ -14,12 +14,22 @@ echo "DB_NAME=" . getenv('DB_NAME') . "\n";
 echo "DB_USER=" . getenv('DB_USER') . "\n";
 flush();
 
+$h = getenv('DB_HOST');
+$u = getenv('DB_USER');
+$p = getenv('DB_PASSWORD');
+$db = getenv('DB_NAME');
+$mysql = "mysql -h $h -u $u -p$p --skip-ssl $db";
+
 echo "Aplicando schema...\n"; flush();
-$schema = shell_exec('mysql --ssl=0 -h mysql.railway.internal -u root -pyFjnOvDVvzawljkDIvkSpWSSgDoEmpJB railway < /var/www/esfero/sql/schema.sql 2>&1');
-if (strpos($schema, 'unknown variable') !== false) {
-    $schema = shell_exec('mysql -h mysql.railway.internal -u root -pyFjnOvDVvzawljkDIvkSpWSSgDoEmpJB --skip-ssl railway < /var/www/esfero/sql/schema.sql 2>&1');
+shell_exec("$mysql < /var/www/esfero/sql/schema.sql 2>&1");
+echo "Schema OK\n"; flush();
+
+echo "Aplicando patches...\n"; flush();
+foreach (glob('/var/www/esfero/sql/patch_*.sql') as $patch) {
+    $out = shell_exec("$mysql < $patch 2>&1");
+    echo basename($patch) . ": " . ($out ?: "OK") . "\n";
+    flush();
 }
-echo "Schema: " . ($schema ?: "OK") . "\n"; flush();
 
 $output = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
 echo $output;
