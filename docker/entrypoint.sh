@@ -16,11 +16,18 @@ export DB_PASSWORD="${DB_PASSWORD:-${MYSQLPASSWORD:-}}"
 APP_PORT="${PORT:-80}"
 echo "[entrypoint] Puerto: ${APP_PORT}"
 
-# Actualizar Listen en ports.conf
-sed -i "s/^Listen 80$/Listen ${APP_PORT}/" /etc/apache2/ports.conf 2>/dev/null || true
-# Actualizar VirtualHost
-sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${APP_PORT}>/" \
+# Sobreescribir ports.conf directamente (más fiable que sed)
+printf "Listen %s\n" "${APP_PORT}" > /etc/apache2/ports.conf
+
+# Actualizar VirtualHost en ambas ubicaciones (patrón amplio por si acaso)
+sed -i "s|<VirtualHost \*:[0-9]*>|<VirtualHost *:${APP_PORT}>|g" \
     /etc/apache2/sites-available/000-default.conf 2>/dev/null || true
+sed -i "s|<VirtualHost \*:[0-9]*>|<VirtualHost *:${APP_PORT}>|g" \
+    /etc/apache2/sites-enabled/000-default.conf 2>/dev/null || true
+
+echo "[entrypoint] Apache configurado en puerto ${APP_PORT}"
+# Verificar que el cambio quedó
+grep "Listen" /etc/apache2/ports.conf || true
 
 # ── 3. APP_URL dinámica en Railway ────────────────────────────
 if [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
