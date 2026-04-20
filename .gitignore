@@ -44,7 +44,7 @@ backend/cgi-bin/test_*.py
 # ------------------------------------------------------------
 # SCRIPTS DE DESARROLLO (seeders, migraciones locales)
 # ------------------------------------------------------------
-scripts/seed_*.php
+# scripts/seed_*.php  — habilitado para Railway deploy
 scripts/reemplazar_*.php
 scripts/ver_logs*.php
 scripts/asignar_*.php
