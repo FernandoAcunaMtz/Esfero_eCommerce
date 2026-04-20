@@ -79,6 +79,7 @@ chmod 600 /var/www/esfero/backend/keys/jwt_private.pem 2>/dev/null || true
     if [ "${TABLE_COUNT}" -lt "5" ]; then
         echo "[db-init] BD vacía — aplicando schema.sql..."
         mysql -h"${DB_HOST}" -P"${DB_PORT}" -u"${DB_USER}" -p"${DB_PASSWORD}" \
+            --skip-ssl --default-character-set=utf8mb4 \
             "${DB_NAME}" < /var/www/esfero/sql/schema.sql && \
             echo "[db-init] schema.sql aplicado."
     fi

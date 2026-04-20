@@ -2,6 +2,7 @@
 # Esfero Marketplace — Apache + PHP 8.2 + Python 3 CGI
 # ============================================================
 FROM php:8.2-apache
+# cache-bust: 2026-04-20
 
 # ── Sistema ──────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y \

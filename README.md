@@ -100,9 +100,22 @@ La aplicación queda disponible en `http://localhost:8080`
 
 | Rol | Correo | Contraseña |
 |---|---|---|
-| Administrador | admin@esfero.com | Admin2024! |
-| Vendedor demo | lucia@demo.esfero | Esfero2024! |
+| Administrador | `admin@esfero.com` | `Admin2024!` |
+| Vendedor demo | `lucia@demo.esfero` | `Esfero2024!` |
 | Comprador | Crear cuenta nueva desde el registro | — |
+
+### Simular pagos con PayPal Sandbox
+
+El checkout usa PayPal en modo sandbox — **no se cobra dinero real**.
+
+Al completar el carrito y hacer clic en "Pagar con PayPal", aparecerá la ventana de PayPal. Usa esta cuenta para aprobar el pago:
+
+| Tipo | Email | Contraseña |
+|---|---|---|
+| **Comprador (Personal)** — usa esta para pagar | `sb-qlvyk50301745@personal.example.com` | `1z|"/fIl` |
+| Merchant (Business) — referencia, ya configurada en `.env` | `sb-7tte4350307722@business.example.com` | `sVj^@8rP` |
+
+> **Nota sobre emails:** Los correos de confirmación, notificaciones y recuperación de contraseña se envían a un sandbox de Mailtrap — no llegarán a tu bandeja real. Puedes ignorarlos al probar la app; todos los flujos funcionan con independencia del email.
 
 ---
 
