@@ -30,12 +30,13 @@ RUN pip3 install --break-system-packages \
     python-dotenv \
     cryptography
 
-# ── Apache: un solo MPM (prefork) + CGI + mod_rewrite ────────
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.conf \
-          /etc/apache2/mods-enabled/mpm_event.load \
-          /etc/apache2/mods-enabled/mpm_worker.conf \
-          /etc/apache2/mods-enabled/mpm_worker.load && \
-    a2enmod mpm_prefork cgi rewrite
+# ── Apache: eliminar cualquier MPM activo, forzar prefork + cgid ─
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.conf \
+          /etc/apache2/mods-enabled/mpm_*.load && \
+    ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load && \
+    ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf && \
+    a2enmod cgid rewrite && \
+    apache2ctl configtest
 
 # ── Configuración Apache ─────────────────────────────────────
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
