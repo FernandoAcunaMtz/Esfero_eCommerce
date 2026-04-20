@@ -8,11 +8,12 @@ if ($token !== 'esfero-seed-2026') {
 
 header('Content-Type: text/plain');
 echo "Corriendo seed...\n";
+echo "DB_HOST=" . getenv('DB_HOST') . "\n";
+echo "DB_PORT=" . getenv('DB_PORT') . "\n";
+echo "DB_NAME=" . getenv('DB_NAME') . "\n";
+echo "DB_USER=" . getenv('DB_USER') . "\n";
 flush();
 
-$output = shell_exec('find / -name "seed_productos.php" 2>/dev/null');
-echo "Ubicación: " . $output . "\n";
-$output2 = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
-$output = $output2;
+$output = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
 echo $output;
 echo "\nListo.";
