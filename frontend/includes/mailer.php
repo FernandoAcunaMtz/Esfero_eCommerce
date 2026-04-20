@@ -25,6 +25,7 @@ function crear_mailer(): PHPMailer {
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = (int)(getenv('MAIL_PORT') ?: 2525);
     $mail->CharSet    = 'UTF-8';
+    $mail->Timeout    = 5;
 
     $mail->setFrom(
         getenv('MAIL_FROM_ADDRESS') ?: 'noreply@esfero.com',

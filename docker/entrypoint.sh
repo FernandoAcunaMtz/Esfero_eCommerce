@@ -59,7 +59,7 @@ chmod 600 /var/www/esfero/backend/keys/jwt_private.pem 2>/dev/null || true
     MAX_TRIES=45
     COUNT=0
     until mysql -h"${DB_HOST}" -P"${DB_PORT}" -u"${DB_USER}" -p"${DB_PASSWORD}" \
-          -e "SELECT 1" > /dev/null 2>&1; do
+          --skip-ssl -e "SELECT 1" > /dev/null 2>&1; do
         COUNT=$((COUNT + 1))
         if [ "$COUNT" -ge "$MAX_TRIES" ]; then
             echo "[db-init] ERROR: MySQL no respondió tras ${MAX_TRIES} intentos."
