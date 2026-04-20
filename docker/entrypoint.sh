@@ -12,7 +12,17 @@ export DB_NAME="${DB_NAME:-${MYSQLDATABASE:-esfero}}"
 export DB_USER="${DB_USER:-${MYSQLUSER:-root}}"
 export DB_PASSWORD="${DB_PASSWORD:-${MYSQLPASSWORD:-}}"
 
-# ── 2. Puerto dinámico Railway ($PORT) ────────────────────────
+# ── 2. Forzar un solo MPM (prefork) en runtime ───────────────
+rm -f /etc/apache2/mods-enabled/mpm_event.conf \
+      /etc/apache2/mods-enabled/mpm_event.load \
+      /etc/apache2/mods-enabled/mpm_worker.conf \
+      /etc/apache2/mods-enabled/mpm_worker.load
+[ -f /etc/apache2/mods-enabled/mpm_prefork.load ] || \
+    ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+[ -f /etc/apache2/mods-enabled/mpm_prefork.conf ] || \
+    ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
+
+# ── 3. Puerto dinámico Railway ($PORT) ────────────────────────
 APP_PORT="${PORT:-80}"
 echo "[entrypoint] Puerto: ${APP_PORT}"
 
