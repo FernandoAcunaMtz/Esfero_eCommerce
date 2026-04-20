@@ -10,7 +10,9 @@ header('Content-Type: text/plain');
 echo "Corriendo seed...\n";
 flush();
 
-$output = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
-if (!$output) $output = shell_exec('find /var/www/esfero -name "seed_productos.php" 2>&1');
+$output = shell_exec('find / -name "seed_productos.php" 2>/dev/null');
+echo "Ubicación: " . $output . "\n";
+$output2 = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
+$output = $output2;
 echo $output;
 echo "\nListo.";
