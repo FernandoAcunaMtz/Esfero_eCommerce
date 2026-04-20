@@ -47,12 +47,13 @@ try {
 // Función helper para ejecutar queries
 function query($sql, $params = []) {
     global $pdo;
-    
+    if (!$pdo) return false;
+
     try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
-    } catch (PDOException $e) {
+    } catch (\Throwable $e) {
         error_log("Database error: " . $e->getMessage());
         return false;
     }
@@ -79,7 +80,8 @@ function getUserByEmail($email) {
 // Función para obtener productos destacados
 function getProductosDestacados($limite = 8, $offset = 0) {
     global $pdo;
-    
+    if (!$pdo) return [];
+
     try {
         $sql = "SELECT p.*, 
                 u.nombre as vendedor_nombre,
