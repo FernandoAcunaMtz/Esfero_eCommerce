@@ -27,7 +27,7 @@ Documentación/CREDENCIALES_*.md
 # ARCHIVOS DE SEGURIDAD CRÍTICA (exponen info del servidor)
 # ------------------------------------------------------------
 frontend/info_servidor.php
-frontend/assets/db_direct.php
+# frontend/assets/db_direct.php
 frontend/ver_logs.php
 frontend/config_log.php
 frontend/detectar_log.php
