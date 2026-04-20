@@ -15,7 +15,10 @@ echo "DB_USER=" . getenv('DB_USER') . "\n";
 flush();
 
 echo "Aplicando schema...\n"; flush();
-$schema = shell_exec('mysql --ssl-mode=DISABLED -h mysql.railway.internal -u root -pyFjnOvDVvzawljkDIvkSpWSSgDoEmpJB railway < /var/www/esfero/sql/schema.sql 2>&1');
+$schema = shell_exec('mysql --ssl=0 -h mysql.railway.internal -u root -pyFjnOvDVvzawljkDIvkSpWSSgDoEmpJB railway < /var/www/esfero/sql/schema.sql 2>&1');
+if (strpos($schema, 'unknown variable') !== false) {
+    $schema = shell_exec('mysql -h mysql.railway.internal -u root -pyFjnOvDVvzawljkDIvkSpWSSgDoEmpJB --skip-ssl railway < /var/www/esfero/sql/schema.sql 2>&1');
+}
 echo "Schema: " . ($schema ?: "OK") . "\n"; flush();
 
 $output = shell_exec('php /var/www/esfero/scripts/seed_productos.php 2>&1');
