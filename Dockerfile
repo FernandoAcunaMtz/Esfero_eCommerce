@@ -31,7 +31,10 @@ RUN pip3 install --break-system-packages \
     cryptography
 
 # ── Apache: un solo MPM (prefork) + CGI + mod_rewrite ────────
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true && \
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.conf \
+          /etc/apache2/mods-enabled/mpm_event.load \
+          /etc/apache2/mods-enabled/mpm_worker.conf \
+          /etc/apache2/mods-enabled/mpm_worker.load && \
     a2enmod mpm_prefork cgi rewrite
 
 # ── Configuración Apache ─────────────────────────────────────
