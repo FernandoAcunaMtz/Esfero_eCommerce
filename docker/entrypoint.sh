@@ -83,6 +83,12 @@ chmod 600 /var/www/esfero/backend/keys/jwt_private.pem 2>/dev/null || true
     echo "[db-init] Migraciones completas."
 ) &
 
-# ── 6. Arrancar Apache en primer plano (healthcheck pasa) ────
+# ── 6. Diagnóstico Apache antes de arrancar ───────────────────
+echo "[apache-diag] mods-enabled con mpm:"
+ls /etc/apache2/mods-enabled/ | grep mpm || echo "ninguno"
+echo "[apache-diag] configtest:"
+apache2ctl configtest 2>&1 || true
+
+# ── 7. Arrancar Apache en primer plano (healthcheck pasa) ────
 echo "[entrypoint] Iniciando Apache en :${APP_PORT}..."
 exec apache2-foreground
