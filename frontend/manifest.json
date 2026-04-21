@@ -1,0 +1,27 @@
+{
+  "name": "Esfero Marketplace",
+  "short_name": "Esfero",
+  "description": "Tu marketplace de confianza en México — compra y vende de forma segura",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#044E65",
+  "theme_color": "#044E65",
+  "orientation": "portrait-primary",
+  "lang": "es-MX",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

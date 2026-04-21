@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     curl \
     unzip \
+    imagemagick \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Composer ──────────────────────────────────────────────────
@@ -36,7 +38,7 @@ RUN rm -f /etc/apache2/mods-enabled/mpm_*.conf \
           /etc/apache2/mods-enabled/mpm_*.load && \
     ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load && \
     ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf && \
-    a2enmod cgid rewrite && \
+    a2enmod cgid rewrite headers && \
     apache2ctl configtest
 
 # ── Configuración Apache ─────────────────────────────────────
@@ -61,6 +63,24 @@ RUN mkdir -p /var/www/esfero/backend/keys && \
     chown www-data:www-data /var/www/esfero/backend/keys/*.pem && \
     chmod 600 /var/www/esfero/backend/keys/jwt_private.pem && \
     chmod 644 /var/www/esfero/backend/keys/jwt_public.pem
+
+# ── Iconos PWA (generados en build con ImageMagick) ──────────
+RUN mkdir -p /var/www/esfero/frontend/assets/icons && \
+    convert -size 512x512 \
+        gradient:"#044E65-#0C9268" \
+        -gravity Center \
+        -fill white \
+        -font /usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf \
+        -pointsize 260 \
+        -annotate 0 "E" \
+        /var/www/esfero/frontend/assets/icons/icon-512.png && \
+    convert /var/www/esfero/frontend/assets/icons/icon-512.png \
+        -resize 192x192 \
+        /var/www/esfero/frontend/assets/icons/icon-192.png && \
+    convert /var/www/esfero/frontend/assets/icons/icon-512.png \
+        -resize 180x180 \
+        /var/www/esfero/frontend/assets/icons/apple-touch-icon.png && \
+    chown www-data:www-data /var/www/esfero/frontend/assets/icons/*.png
 
 # ── Entrypoint (puerto dinámico Railway + migraciones) ───────
 COPY docker/entrypoint.sh /entrypoint.sh

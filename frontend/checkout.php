@@ -48,6 +48,10 @@ $paypal_currency  = getenv('PAYPAL_CURRENCY') ?: 'MXN';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#044E65">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+    <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
     <title>Finalizar Compra — Esfero</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
