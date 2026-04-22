@@ -84,7 +84,7 @@ if (!is_logged_in()) {
             </div>
 
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; padding: 0 0.5rem;">
-                <a href="#categorias" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; flex: 1 1 auto;">Explorar categorías</a>
+                <a href="buscar.php" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; flex: 1 1 auto;">Explorar categorías</a>
                 <a href="<?php echo $vender_url; ?>" class="cta-button" style="min-width: 160px; max-width: 280px; text-align: center; background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); box-shadow: 0 4px 18px rgba(249,115,22,0.35); flex: 1 1 auto;">Vender ahora</a>
             </div>
         </div>
@@ -94,10 +94,10 @@ if (!is_logged_in()) {
         <div class="container">
             <h2 class="section-title">Productos destacados</h2>
             <div id="quick-filters" style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; margin:-0.5rem 0 1.25rem;">
-                <button class="filter-chip"><i class="fas fa-tag"></i> Hasta $1,500</button>
-                <button class="filter-chip"><i class="fas fa-truck"></i> Envío gratis</button>
-                <button class="filter-chip"><i class="fas fa-star"></i> Como nuevo</button>
-                <button class="filter-chip"><i class="fas fa-map-marker-alt"></i> En tu ciudad</button>
+                <button class="filter-chip"><i class="fas fa-tag" aria-hidden="true"></i> Hasta $1,500</button>
+                <button class="filter-chip"><i class="fas fa-truck" aria-hidden="true"></i> Envío gratis</button>
+                <button class="filter-chip"><i class="fas fa-star" aria-hidden="true"></i> Como nuevo</button>
+                <button class="filter-chip"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> En tu ciudad</button>
             </div>
             <p style="text-align: center; font-size: 1.2rem; color: #2B2B2B; margin-bottom: 1.5rem; width: 100%; margin-left: auto; margin-right: auto;">
                 Ofertas seleccionadas por el equipo de Esfero. Encuentra artículos usados en excelente estado.
@@ -133,7 +133,7 @@ if (!is_logged_in()) {
                         <?php if ($imagen): ?>
                         <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" width="400" height="400" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/400x400?text=Sin+imagen'">
                         <?php else: ?>
-                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#8BB4C0;"><i class="fas fa-image" style="font-size:2rem;"></i></div>
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#4A7080;"><i class="fas fa-image" style="font-size:2rem;" aria-hidden="true"></i></div>
                         <?php endif; ?>
                         <!-- Badge estado del producto -->
                         <span style="position:absolute; top:10px; left:10px; background:rgba(11,45,60,0.72); backdrop-filter:blur(4px); color:white; padding:0.2rem 0.5rem; border-radius:6px; font-size:0.72rem; font-weight:600; z-index:2;"><?php echo htmlspecialchars($estado_texto); ?></span>
@@ -141,8 +141,9 @@ if (!is_logged_in()) {
                         <button onclick="event.stopPropagation(); event.preventDefault(); toggleFavorite(<?php echo (int)$producto['id']; ?>, this);"
                                 style="position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:none; width:34px; height:34px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:3; box-shadow:0 2px 8px rgba(0,0,0,0.12); transition:transform 0.15s; backdrop-filter:blur(4px);"
                                 data-producto-id="<?php echo (int)$producto['id']; ?>"
+                                aria-label="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>"
                                 title="<?php echo $es_favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'; ?>">
-                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size:1rem;"></i>
+                            <i class="<?php echo $icono_favorito; ?>" style="color:<?php echo $color_favorito; ?>; font-size:1rem;" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="card-footer">
@@ -263,8 +264,8 @@ if (!is_logged_in()) {
                     </p>
                     
                     <!-- Botón de cerrar -->
-                    <button id="collapse-btn" class="collapse-button">
-                        <i class="fas fa-times"></i>
+                    <button id="collapse-btn" class="collapse-button" aria-label="Cerrar">
+                        <i class="fas fa-times" aria-hidden="true"></i>
                     </button>
                     
                     <!-- Grid de tarjetas -->

@@ -31,7 +31,7 @@
   --c-surface-alt:   #EBF5F9;
   --c-text:          #0B2D3C;
   --c-muted:         #4A7585;
-  --c-subtle:        #8BB4C0;
+  --c-subtle:        #4A7080;   /* was #4A7080 — darkened for WCAG AA contrast */
   --c-border:        #C5DEE8;
   --c-border-light:  #E0EFF5;
 
@@ -363,7 +363,7 @@ body:not(.has-hero) .navbar {
 .notif-dd-empty {
     padding: 2rem 1rem;
     text-align: center;
-    color: #8BB4C0;
+    color: #4A7080;
 }
 
 .notif-dd-empty i {
@@ -444,7 +444,7 @@ body:not(.has-hero) .navbar {
 
 .notif-dd-time {
     font-size: 0.73rem;
-    color: #8BB4C0;
+    color: #4A7080;
     margin: 0;
 }
 
@@ -1988,7 +1988,7 @@ body:not(.has-hero) .navbar {
         justify-content: center;
         gap: 2px;
         text-decoration: none;
-        color: #8BB4C0;
+        color: #4A7080;
         font-size: 0.6rem;
         font-weight: 500;
         letter-spacing: 0.01em;
@@ -2121,7 +2121,7 @@ body:not(.has-hero) .navbar {
 /* Precio anterior — tachado */
 .card-price-original {
     font-size: 0.82rem;
-    color: var(--c-subtle, #8BB4C0);
+    color: var(--c-subtle, #4A7080);
     text-decoration: line-through;
     line-height: 1;
 }
@@ -2170,7 +2170,7 @@ body:not(.has-hero) .navbar {
 
 .card-location {
     font-size: 0.78rem;
-    color: var(--c-subtle, #8BB4C0);
+    color: var(--c-subtle, #4A7080);
     margin: 0;
     display: flex;
     align-items: center;
