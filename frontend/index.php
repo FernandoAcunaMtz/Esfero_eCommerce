@@ -37,17 +37,22 @@ if (!is_logged_in()) {
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
     <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
     <title>Esfero - Tu marketplace de confianza en México</title>
-    <!-- Rendimiento: preconnect antes de cualquier request externo -->
+    <meta name="description" content="Esfero Marketplace — compra y vende artículos de segunda mano en México. Protección al comprador, pagos seguros con PayPal y envíos a todo el país.">
+    <!-- Preconnect para recursos externos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Inter — tipografía moderna con excelente legibilidad -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Inter: no-render-blocking con display=swap -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    <!-- FontAwesome: no-render-blocking -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="has-hero">
     <?php include 'components/navbar.php'; ?>
+    <main>
 
     <!-- Hero Section - Optimizado para carga prioritaria en móviles -->
     <section class="hero" id="inicio" data-parallax-speed="0.35" style="order: -1;">
@@ -126,7 +131,7 @@ if (!is_logged_in()) {
                 <a href="producto.php?id=<?php echo $producto['id']; ?>" class="portfolio-item animate-in" style="text-decoration:none; color:inherit; display:block;">
                     <div style="position:relative; overflow:hidden; aspect-ratio:1/1; background:#EEF8FA;">
                         <?php if ($imagen): ?>
-                        <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/400x400?text=Sin+imagen'">
+                        <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['titulo']); ?>" width="400" height="400" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://placehold.co/400x400?text=Sin+imagen'">
                         <?php else: ?>
                         <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#8BB4C0;"><i class="fas fa-image" style="font-size:2rem;"></i></div>
                         <?php endif; ?>
@@ -187,18 +192,18 @@ if (!is_logged_in()) {
                 ?>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem;">
                     <div style="text-align: center;" data-animate="fade-up">
-                        <h3 style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
-                            data-count="<?php echo (int)$productos_activos; ?>"><?php echo htmlspecialchars($productos_formato); ?></h3>
+                        <p aria-label="contador" style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
+                            data-count="<?php echo (int)$productos_activos; ?>"><?php echo htmlspecialchars($productos_formato); ?></p>
                         <p style="font-size: 1rem; opacity: 0.88;">Productos Activos</p>
                     </div>
                     <div style="text-align: center;" data-animate="fade-up">
-                        <h3 style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
-                            data-count="<?php echo (int)$usuarios_activos; ?>"><?php echo htmlspecialchars($usuarios_formato); ?></h3>
+                        <p aria-label="contador" style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
+                            data-count="<?php echo (int)$usuarios_activos; ?>"><?php echo htmlspecialchars($usuarios_formato); ?></p>
                         <p style="font-size: 1rem; opacity: 0.88;">Usuarios Activos</p>
                     </div>
                     <div style="text-align: center;" data-animate="fade-up">
-                        <h3 style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
-                            data-count="<?php echo (int)$estados_cobertura; ?>"><?php echo htmlspecialchars($estados_cobertura); ?></h3>
+                        <p aria-label="contador" style="color: #ffffff; font-size: clamp(2rem,5vw,3rem); margin-bottom: 0.5rem; font-weight: 800;"
+                            data-count="<?php echo (int)$estados_cobertura; ?>"><?php echo htmlspecialchars($estados_cobertura); ?></p>
                         <p style="font-size: 1rem; opacity: 0.88;">Estados de México</p>
                     </div>
                 </div>
@@ -400,7 +405,7 @@ if (!is_logged_in()) {
                 <article class="blog-card">
                     <div class="blog-image">
                         <?php if ($guia['imagen_url']): ?>
-                            <img src="<?php echo htmlspecialchars($guia['imagen_url']); ?>" alt="<?php echo htmlspecialchars($guia['titulo']); ?>" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
+                            <img src="<?php echo htmlspecialchars($guia['imagen_url']); ?>" alt="<?php echo htmlspecialchars($guia['titulo']); ?>" width="800" height="200" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
                         <?php else: ?>
                             <div style="width: 100%; height: 200px; background: <?php echo $color; ?>; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
                                 <i class="fas <?php echo $icono; ?>"></i>
@@ -431,6 +436,8 @@ if (!is_logged_in()) {
             </div>
         </div>
     </section>
+
+    </main>
 
     <?php include 'includes/footer.php'; ?>
 
