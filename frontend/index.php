@@ -53,6 +53,8 @@ if (!is_logged_in()) {
     <section class="hero" id="inicio" data-parallax-speed="0.35" style="order: -1;">
         <canvas id="dotGridCanvas" aria-hidden="true"></canvas>
         <div class="hero-content" style="width: 100%; max-width: 920px; margin: 0 auto; text-align: center; position: relative; z-index: 10;">
+            <img src="/assets/img/logo-white.svg" alt="Esfero"
+                 style="height: clamp(48px, 8vw, 72px); margin-bottom: 1.25rem; opacity: 0.95; filter: drop-shadow(0 2px 16px rgba(0,0,0,0.25));">
             <h1 style="font-size: clamp(1.5rem, 3.5vw, 2.5rem); line-height: 1.2; margin-bottom: 0.75rem; font-weight: 700;">Dale nueva vida a lo bueno.</h1>
             <p style="font-size: clamp(1rem, 2.2vw, 1.2rem); opacity: 0.9; margin-bottom: 1.25rem; line-height: 1.5;">Encuentra las mejores ofertas de segunda mano con protección al comprador y envíos a todo el país</p>
 
@@ -61,19 +63,19 @@ if (!is_logged_in()) {
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
                 <input id="search-input" type="text" placeholder="Buscar: iPhone, PlayStation, Nike, refrigerador, moto…" style="flex: 1; border: none; outline: none; background: transparent; padding: 0.75rem 0.5rem; font-size: clamp(0.9rem, 2vw, 1rem); min-width: 0;">
-                <button type="button" class="cta-button" style="margin: 0; border-radius: 8px; padding: 0.5rem 0.75rem; white-space: nowrap; background: #0D87A8; font-size: clamp(0.8rem, 1.8vw, 0.9rem); flex-shrink: 0; font-weight: 500;">
+                <button id="hero-search-btn" type="button" class="cta-button" style="margin: 0; border-radius: 8px; padding: 0.5rem 0.75rem; white-space: nowrap; background: #0D87A8; font-size: clamp(0.8rem, 1.8vw, 0.9rem); flex-shrink: 0; font-weight: 500;">
                     Buscar
                 </button>
             </div>
             <div id="search-suggestions" style="display:none; position: relative; max-width: 780px; width: 100%; margin: 0 auto 0.75rem;"></div>
 
             <div id="chips" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0 0.5rem;">
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Celulares</a>
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Consolas</a>
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Motos</a>
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Línea Blanca</a>
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Ropa</a>
-                <a href="#categorias" style="background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); padding: 0.35rem 0.75rem; border-radius: 999px; font-size: clamp(0.8rem, 2vw, 0.9rem); text-decoration: none; transition: all 0.3s ease; white-space: nowrap;">Muebles</a>
+                <a href="buscar.php?query=Celulares"    class="hero-chip">Celulares</a>
+                <a href="buscar.php?query=Consolas"     class="hero-chip">Consolas</a>
+                <a href="buscar.php?query=Motos"        class="hero-chip">Motos</a>
+                <a href="buscar.php?query=L%C3%ADnea+Blanca" class="hero-chip">Línea Blanca</a>
+                <a href="buscar.php?query=Ropa"         class="hero-chip">Ropa</a>
+                <a href="buscar.php?query=Muebles"      class="hero-chip">Muebles</a>
             </div>
 
             <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; padding: 0 0.5rem;">
@@ -720,5 +722,33 @@ if (!is_logged_in()) {
 
     <!-- Toasts -->
     <div id="toast-container" style="position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 9999;"></div>
+
+    <style>
+    .hero-chip {
+        background: rgba(255,255,255,0.18);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.25);
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s;
+        white-space: nowrap;
+    }
+    .hero-chip:hover { background: rgba(255,255,255,0.32); border-color: rgba(255,255,255,0.5); }
+    </style>
+    <script>
+    (function() {
+        function goSearch() {
+            var q = (document.getElementById('search-input').value || '').trim();
+            if (!q) return;
+            window.location.href = 'buscar.php?query=' + encodeURIComponent(q);
+        }
+        document.getElementById('hero-search-btn').addEventListener('click', goSearch);
+        document.getElementById('search-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') goSearch();
+        });
+    })();
+    </script>
 </body>
 </html>

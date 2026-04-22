@@ -89,6 +89,7 @@ chmod 600 /var/www/esfero/backend/keys/jwt_private.pem 2>/dev/null || true
     for PATCH in /var/www/esfero/sql/patch_*.sql; do
         echo "[db-init]   ${PATCH}"
         mysql -h"${DB_HOST}" -P"${DB_PORT}" -u"${DB_USER}" -p"${DB_PASSWORD}" \
+            --skip-ssl --default-character-set=utf8mb4 \
             "${DB_NAME}" < "${PATCH}" 2>/dev/null || true
     done
     echo "[db-init] Migraciones completas."
