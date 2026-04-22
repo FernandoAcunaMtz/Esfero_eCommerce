@@ -56,7 +56,7 @@ if (!is_logged_in()) {
 
     <!-- Hero Section - Optimizado para carga prioritaria en móviles -->
     <section class="hero" id="inicio" data-parallax-speed="0.35" style="order: -1;">
-        <canvas id="dotGridCanvas" aria-hidden="true"></canvas>
+        <div id="prismCanvas" aria-hidden="true"></div>
         <div class="hero-content" style="width: 100%; max-width: 920px; margin: 0 auto; text-align: center; position: relative; z-index: 10;">
             <img src="/assets/img/logo-white.svg" alt="Esfero"
                  style="height: clamp(48px, 8vw, 72px); margin-bottom: 1.25rem; opacity: 0.95; filter: drop-shadow(0 2px 16px rgba(0,0,0,0.25));">
@@ -544,187 +544,194 @@ if (!is_logged_in()) {
             });
         }
     </script>
-    <!-- DotGrid background — Vanilla JS Canvas (inspirado en ReactBits DotGrid) -->
+    <!-- Prism background — WebGL port of ReactBits Prism, tuned for Esfero teal palette -->
     <script>
     (function() {
-        var canvas = document.getElementById('dotGridCanvas');
-        if (!canvas) return;
-        var ctx = canvas.getContext('2d');
-        var hero  = document.getElementById('inicio');
+        var container = document.getElementById('prismCanvas');
+        if (!container) return;
 
-        // ── Config ──────────────────────────────────────────────────────────────
-        var DOT_R       = 2.2;   // radio del punto (px)
-        var GAP         = 22;    // separación entre puntos (px)
-        var PROXIMITY   = 130;   // radio de influencia del cursor (px)
-        var EASE        = 0.10;  // velocidad de transición (0-1)
+        // ── Parameters (tuned for Esfero teal/cyan palette, no orange) ─────────
+        var H         = 3.5;
+        var BASE_HALF = 5.5 * 0.5;
+        var GLOW      = 1.0;
+        var NOISE_VAL = 0.4;
+        var SAT       = 1.5;   // transparent=true boosts saturation
+        var SCALE     = 3.6;
+        var HUE_SHIFT = 2.4;   // ≈137° — maps reds→cyans, keeps blue-green range
+        var CFREQ     = 0.7;
+        var BLOOM     = 1.2;
+        var TS        = 0.4;   // slow, elegant animation
 
-        // Colores en RGB  (igual que la paleta Esfero)
-        var C_BG        = '#00303f';            // fondo del hero
-        var C_IDLE      = [0, 95, 120];          // punto en reposo
-        var C_ACTIVE    = [130, 255, 200];      // punto iluminado (brillo máximo)
+        // ── WebGL context ───────────────────────────────────────────────────────
+        var dpr = Math.min(2, window.devicePixelRatio || 1);
+        var cv  = document.createElement('canvas');
+        cv.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;pointer-events:none;';
+        container.appendChild(cv);
 
-        var mouse = { x: -9999, y: -9999 };
-        var dots  = [];
-        var ripples = [];
-        var raf   = null;
-        var dpr   = window.devicePixelRatio || 1;
+        var gl = cv.getContext('webgl', { alpha: true, antialias: false, depth: false, stencil: false });
+        if (!gl) return;
+        gl.disable(gl.DEPTH_TEST);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
 
-        // ── Helpers ─────────────────────────────────────────────────────────────
-        function lerp(a, b, t) { return a + (b - a) * t; }
-        function lerpC(c1, c2, t) {
-            return [
-                Math.round(lerp(c1[0], c2[0], t)),
-                Math.round(lerp(c1[1], c2[1], t)),
-                Math.round(lerp(c1[2], c2[2], t))
-            ];
+        // ── Vertex shader ───────────────────────────────────────────────────────
+        var VS = `attribute vec2 position;
+void main(){gl_Position=vec4(position,0.0,1.0);}`;
+
+        // ── Fragment shader (identical logic to ReactBits Prism) ────────────────
+        var FS = `precision highp float;
+uniform vec2  iResolution;
+uniform float iTime;
+uniform mat3  uRot;
+uniform int   uUseBaseWobble;
+uniform float uGlow;
+uniform vec2  uOffsetPx;
+uniform float uNoise;
+uniform float uSaturation;
+uniform float uHueShift;
+uniform float uColorFreq;
+uniform float uBloom;
+uniform float uCenterShift;
+uniform float uInvBaseHalf;
+uniform float uInvHeight;
+uniform float uMinAxis;
+uniform float uPxScale;
+uniform float uTimeScale;
+
+vec4 tanh4(vec4 x){
+    vec4 e2x=exp(2.0*x);
+    return(e2x-1.0)/(e2x+1.0);
+}
+float rand(vec2 co){
+    return fract(sin(dot(co,vec2(12.9898,78.233)))*43758.5453123);
+}
+float sdOctaAnisoInv(vec3 p){
+    vec3 q=vec3(abs(p.x)*uInvBaseHalf,abs(p.y)*uInvHeight,abs(p.z)*uInvBaseHalf);
+    return(q.x+q.y+q.z-1.0)*uMinAxis*0.5773502691896258;
+}
+float sdPyramidUpInv(vec3 p){
+    return max(sdOctaAnisoInv(p),-p.y);
+}
+mat3 hueRotation(float a){
+    float c=cos(a),s=sin(a);
+    return mat3(0.299,0.587,0.114,0.299,0.587,0.114,0.299,0.587,0.114)
+          +mat3(0.701,-0.587,-0.114,-0.299,0.413,-0.114,-0.300,-0.588,0.886)*c
+          +mat3(0.168,-0.331,0.500,0.328,0.035,-0.500,-0.497,0.296,0.201)*s;
+}
+void main(){
+    vec2 f=(gl_FragCoord.xy-0.5*iResolution.xy-uOffsetPx)*uPxScale;
+    float z=5.0,d=0.0;
+    vec3 p;
+    vec4 o=vec4(0.0);
+    mat2 wob=mat2(1.0);
+    if(uUseBaseWobble==1){
+        float t=iTime*uTimeScale;
+        wob=mat2(cos(t),cos(t+33.0),cos(t+11.0),cos(t));
+    }
+    for(int i=0;i<100;i++){
+        p=vec3(f,z);
+        p.xz=p.xz*wob;
+        p=uRot*p;
+        vec3 q=p;q.y+=uCenterShift;
+        d=0.1+0.2*abs(sdPyramidUpInv(q));
+        z-=d;
+        o+=(sin((p.y+z)*uColorFreq+vec4(0.0,1.0,2.0,3.0))+1.0)/d;
+    }
+    o=tanh4(o*o*(uGlow*uBloom)/1e5);
+    vec3 col=o.rgb;
+    col+=(rand(gl_FragCoord.xy+vec2(iTime))-0.5)*uNoise;
+    col=clamp(col,0.0,1.0);
+    float L=dot(col,vec3(0.2126,0.7152,0.0722));
+    col=clamp(mix(vec3(L),col,uSaturation),0.0,1.0);
+    if(abs(uHueShift)>0.0001) col=clamp(hueRotation(uHueShift)*col,0.0,1.0);
+    gl_FragColor=vec4(col,o.a);
+}`;
+
+        // ── Compile & link ──────────────────────────────────────────────────────
+        function mkShader(type, src) {
+            var s = gl.createShader(type);
+            gl.shaderSource(s, src);
+            gl.compileShader(s);
+            return s;
         }
-
-        // ── Build grid ──────────────────────────────────────────────────────────
-        function buildDots(w, h) {
-            dots = [];
-            var ox = (w % GAP) / 2;
-            var oy = (h % GAP) / 2;
-            for (var x = ox; x < w; x += GAP) {
-                for (var y = oy; y < h; y += GAP) {
-                    dots.push({ x: x, y: y, b: 0 });
-                }
-            }
+        var prog = gl.createProgram();
+        gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
+        gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+            console.warn('[Prism] link failed:', gl.getProgramInfoLog(prog));
+            return;
         }
+        gl.useProgram(prog);
 
-        // ── Resize ──────────────────────────────────────────────────────────────
+        // ── Full-screen triangle geometry ────────────────────────────────────────
+        var vbuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+        var posLoc = gl.getAttribLocation(prog, 'position');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+        // ── Set static uniforms ──────────────────────────────────────────────────
+        function u(n) { return gl.getUniformLocation(prog, n); }
+        gl.uniform1i(u('uUseBaseWobble'), 1);
+        gl.uniform1f(u('uGlow'),        GLOW);
+        gl.uniform1f(u('uNoise'),       NOISE_VAL);
+        gl.uniform1f(u('uSaturation'),  SAT);
+        gl.uniform1f(u('uHueShift'),    HUE_SHIFT);
+        gl.uniform1f(u('uColorFreq'),   CFREQ);
+        gl.uniform1f(u('uBloom'),       BLOOM);
+        gl.uniform1f(u('uTimeScale'),   TS);
+        gl.uniform1f(u('uCenterShift'), H * 0.25);
+        gl.uniform1f(u('uInvBaseHalf'), 1.0 / BASE_HALF);
+        gl.uniform1f(u('uInvHeight'),   1.0 / H);
+        gl.uniform1f(u('uMinAxis'),     Math.min(BASE_HALF, H));
+        gl.uniform2f(u('uOffsetPx'),    0.0, 0.0);
+        gl.uniformMatrix3fv(u('uRot'),  false, new Float32Array([1,0,0, 0,1,0, 0,0,1]));
+
+        // ── Dynamic uniform locations ─────────────────────────────────────────────
+        var uResLoc     = u('iResolution');
+        var uTimeLoc    = u('iTime');
+        var uPxScaleLoc = u('uPxScale');
+
+        // ── Resize ───────────────────────────────────────────────────────────────
         function resize() {
-            dpr = window.devicePixelRatio || 1;
-            var w = hero.offsetWidth;
-            var h = hero.offsetHeight;
-            canvas.width  = w * dpr;
-            canvas.height = h * dpr;
-            canvas.style.width  = w + 'px';
-            canvas.style.height = h + 'px';
-            ctx.scale(dpr, dpr);
-            buildDots(w, h);
+            var w = container.clientWidth  || 1;
+            var h = container.clientHeight || 1;
+            cv.width  = Math.round(w * dpr);
+            cv.height = Math.round(h * dpr);
+            gl.viewport(0, 0, cv.width, cv.height);
+            gl.uniform2f(uResLoc,     cv.width, cv.height);
+            gl.uniform1f(uPxScaleLoc, 1.0 / ((cv.height || 1) * 0.1 * SCALE));
         }
-
-        // ── Main draw loop ───────────────────────────────────────────────────────
-        function draw() {
-            var w = canvas.width  / dpr;
-            var h = canvas.height / dpr;
-
-            ctx.fillStyle = C_BG;
-            ctx.fillRect(0, 0, w, h);
-
-            for (var i = 0; i < dots.length; i++) {
-                var d   = dots[i];
-                var dx  = d.x - mouse.x;
-                var dy  = d.y - mouse.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-
-                // Proximity from cursor
-                var target = dist < PROXIMITY ? (1 - dist / PROXIMITY) : 0;
-
-                // Ripple contribution
-                for (var r = 0; r < ripples.length; r++) {
-                    var rp   = ripples[r];
-                    var rdx  = d.x - rp.x;
-                    var rdy  = d.y - rp.y;
-                    var rdist = Math.sqrt(rdx * rdx + rdy * rdy);
-                    var thick = 45;
-                    var diff  = Math.abs(rdist - rp.rad);
-                    if (diff < thick) {
-                        var t = (1 - diff / thick) * rp.a;
-                        if (t > target) target = t;
-                    }
-                }
-
-                // Smooth
-                d.b += (target - d.b) * EASE;
-
-                var color = lerpC(C_IDLE, C_ACTIVE, Math.min(1, d.b));
-                var alpha = 0.38 + d.b * 0.62;
-
-                // Radio crece con el hover (efecto de "levantarse")
-                var r = DOT_R * (1 + d.b * 2.2);
-
-                // 1. Sombra offset → ilusión de profundidad
-                if (d.b > 0.05) {
-                    var so = d.b * 4;
-                    ctx.beginPath();
-                    ctx.arc(d.x + so, d.y + so, r * 0.85, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(0,0,0,' + (d.b * 0.5) + ')';
-                    ctx.fill();
-                }
-
-                // 2. Punto principal
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + alpha + ')';
-                ctx.fill();
-
-                // 3. Reflejo especular arriba-izquierda → ilusión de esfera 3D
-                if (d.b > 0.12) {
-                    ctx.beginPath();
-                    ctx.arc(d.x - r * 0.28, d.y - r * 0.30, r * 0.30, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,' + (d.b * 0.50) + ')';
-                    ctx.fill();
-                }
-            }
-
-            // Advance ripples
-            for (var j = ripples.length - 1; j >= 0; j--) {
-                ripples[j].rad += 4.5;
-                ripples[j].a   -= 0.014;
-                if (ripples[j].a <= 0) ripples.splice(j, 1);
-            }
-
-            raf = requestAnimationFrame(draw);
+        if (window.ResizeObserver) {
+            new ResizeObserver(resize).observe(container);
+        } else {
+            window.addEventListener('resize', resize);
         }
-
-        // ── Events ──────────────────────────────────────────────────────────────
-        hero.addEventListener('mousemove', function(e) {
-            var rect = hero.getBoundingClientRect();
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
-        });
-        hero.addEventListener('mouseleave', function() {
-            mouse.x = -9999;
-            mouse.y = -9999;
-        });
-        hero.addEventListener('click', function(e) {
-            var rect = hero.getBoundingClientRect();
-            ripples.push({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
-                rad: 0,
-                a: 1
-            });
-        });
-
-        // Touch support
-        hero.addEventListener('touchmove', function(e) {
-            var rect = hero.getBoundingClientRect();
-            var t = e.touches[0];
-            mouse.x = t.clientX - rect.left;
-            mouse.y = t.clientY - rect.top;
-        }, { passive: true });
-        hero.addEventListener('touchend', function() {
-            mouse.x = -9999; mouse.y = -9999;
-        });
-
-        // ── Init ────────────────────────────────────────────────────────────────
-        window.addEventListener('resize', resize);
         resize();
-        draw();
 
-        // Pause when hero not visible (perf)
+        // ── Render loop ──────────────────────────────────────────────────────────
+        var raf = 0;
+        var t0  = performance.now();
+        function render(t) {
+            gl.uniform1f(uTimeLoc, (t - t0) * 0.001);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+            raf = requestAnimationFrame(render);
+        }
+
+        // Pause when hero section scrolls off-screen
         if ('IntersectionObserver' in window) {
             new IntersectionObserver(function(entries) {
                 if (entries[0].isIntersecting) {
-                    if (!raf) draw();
+                    if (!raf) raf = requestAnimationFrame(render);
                 } else {
                     cancelAnimationFrame(raf);
-                    raf = null;
+                    raf = 0;
                 }
-            }).observe(hero);
+            }).observe(container);
         }
+        raf = requestAnimationFrame(render);
     })();
     </script>
 

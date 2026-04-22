@@ -862,8 +862,8 @@ body:not(.has-hero) .navbar {
     /* box-shadow removido: causaba franja oscura encima de la sección siguiente */
 }
 
-/* Canvas DotGrid — reemplaza imagen de fondo */
-#dotGridCanvas {
+/* Prism WebGL background */
+#prismCanvas {
     position: absolute;
     top: 0;
     left: 0;
